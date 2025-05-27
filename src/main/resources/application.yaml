@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: newsfeed
+
+  # MySQL DataSource 설정
+  datasource:
+    url: jdbc:mysql://localhost:3306/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # 엔티티 기반 자동 테이블 생성 (개발 과정에서만 사용)
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true # JPA의 SQL 출력
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect # MySQL 방언
+        format_sql: true # SQL 출력 로그 포매팅
+
+        spring:
+          jpa:
+            hibernate:

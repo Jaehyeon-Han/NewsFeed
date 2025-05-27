@@ -1,0 +1,14 @@
+package org.springfeed.newsfeed.domain.post.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.springfeed.newsfeed.domain.post.service.PostService;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+public class PostController {
+
+    private final PostService postService;
+
+    // Todo
+}
