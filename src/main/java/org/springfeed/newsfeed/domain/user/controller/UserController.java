@@ -10,6 +10,8 @@ import org.springfeed.newsfeed.domain.user.dto.request.SignUpRequest;
 import org.springfeed.newsfeed.domain.user.dto.request.UpdateUserInfoRequest;
 import org.springfeed.newsfeed.domain.user.dto.response.UserResponse;
 import org.springfeed.newsfeed.domain.user.service.UserService;
+import org.springfeed.newsfeed.global.auth.dto.response.SessionResponse;
+import org.springfeed.newsfeed.global.config.SessionType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,43 +41,31 @@ public class UserController {
     @PutMapping("/users/{userId}")
     public ResponseEntity<?> updateUser(
             @PathVariable Long userId,
-            @RequestBody UpdateUserInfoRequest request, HttpSession session) {
+            @RequestBody UpdateUserInfoRequest request,
+            @SessionAttribute(name = SessionType.USER, required = false) SessionResponse currentUser) {
 
         try {
-            UserResponse response = userService.updateUser(session, userId, request);
+                UserResponse response = userService.updateUser(userId, request, currentUser);
+                return ResponseEntity.ok(response);
 
-            return ResponseEntity.ok(response);
-
-        } catch (IllegalStateException e) {
-            // 로그인 안된 상태
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-
-        } catch (IllegalArgumentException e) {
-            // 본인 아님
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            }
         }
-    }
 
     //비밀번호 수정
     @PatchMapping("/users/{userId}/password")
     public ResponseEntity<?> updatePassword(
             @PathVariable Long userId,
             @RequestBody ChangePasswordRequest request,
-            HttpSession session
-    ) {
+            @SessionAttribute(name = SessionType.USER, required = false) SessionResponse currentUser) {
+
         try {
-            userService.updatePassword(session, userId, request);
+            userService.updatePassword(userId, request, currentUser);
             return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
 
-        } catch (IllegalStateException e) {
-            // 로그인 안된 상태
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-
         } catch (IllegalArgumentException e) {
-            // 비밀번호 틀림, 본인 아님, 동일한 비밀번호 등
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-
         }
     }
 
