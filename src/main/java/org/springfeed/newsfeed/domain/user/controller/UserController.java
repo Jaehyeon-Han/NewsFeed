@@ -30,10 +30,6 @@ public class UserController {
     public ResponseEntity<?> getUser(@PathVariable Long userId) {
         UserResponse userResponse = userService.getUser(userId);
 
-        if (userResponse == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("USER를 찾을 수 없습니다.");
-        }
-
         return ResponseEntity.ok(userResponse);
     }
 
@@ -42,7 +38,7 @@ public class UserController {
     public ResponseEntity<?> updateUser(
             @PathVariable Long userId,
             @RequestBody UpdateUserInfoRequest request,
-            @SessionAttribute(name = SessionType.USER, required = false) SessionResponse currentUser) {
+            @SessionAttribute(name = SessionType.USER) SessionResponse currentUser) {
 
         try {
                 UserResponse response = userService.updateUser(userId, request, currentUser);
@@ -58,20 +54,15 @@ public class UserController {
     public ResponseEntity<?> updatePassword(
             @PathVariable Long userId,
             @RequestBody ChangePasswordRequest request,
-            @SessionAttribute(name = SessionType.USER, required = false) SessionResponse currentUser) {
+            @SessionAttribute(name = SessionType.USER) SessionResponse currentUser) {
 
-        try {
             userService.updatePassword(userId, request, currentUser);
             return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
     }
 
 
     // 회원가입과 탈퇴 여기에 구현
-    // Todo
+
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequest request) {
         userService.signUp(request.getEmail(), request.getPassword(), request.getPasswordCheck(), request.getNickname(), request.getIntroduction());
