@@ -7,7 +7,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "users")
 @Getter
-@Setter
 public class User extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,12 +15,15 @@ public class User extends BaseEntity {
     private String email;
 
     @Column(name = "password_hash", nullable = false, length = 255)
+    @Setter
     private String passwordHash;
 
     @Column(nullable = false, length = 20)
+    @Setter
     private String nickname;
 
     @Column(length = 500)
+    @Setter
     private String introduction;
 
     public User(String email, String encodePassword, String nickname, String introduction) {

@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    
+
     // 유저 조회
     @GetMapping("/users/{userId}")
-    public ResponseEntity<?> getUser(@PathVariable Long userId) {
+    public ResponseEntity<UserResponse> getUser(@PathVariable Long userId) {
         UserResponse userResponse = userService.getUser(userId);
 
         return ResponseEntity.ok(userResponse);
@@ -35,29 +35,25 @@ public class UserController {
 
     // 유저 수정
     @PutMapping("/users/{userId}")
-    public ResponseEntity<?> updateUser(
-            @PathVariable Long userId,
-            @Valid @RequestBody UpdateUserInfoRequest request,
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long userId, @Valid @RequestBody UpdateUserInfoRequest request,
             @SessionAttribute(name = SessionType.USER) SessionUserDataResponse currentUser) {
 
         try {
-                UserResponse response = userService.updateUser(userId, request, currentUser);
-                return ResponseEntity.ok(response);
+            UserResponse response = userService.updateUser(userId, request, currentUser);
+            return ResponseEntity.ok(response);
 
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+    }
 
     //비밀번호 수정
     @PatchMapping("/users/{userId}/password")
-    public ResponseEntity<?> updatePassword(
-            @PathVariable Long userId,
-            @Valid @RequestBody ChangePasswordRequest request,
+    public ResponseEntity<String> updatePassword(@PathVariable Long userId, @Valid @RequestBody ChangePasswordRequest request,
             @SessionAttribute(name = SessionType.USER) SessionUserDataResponse currentUser) {
 
-            userService.updatePassword(userId, request, currentUser);
-            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        userService.updatePassword(userId, request, currentUser);
+        return ResponseEntity.ok().build();
     }
 
 
