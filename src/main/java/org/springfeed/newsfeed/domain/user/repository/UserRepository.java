@@ -1,8 +1,12 @@
 package org.springfeed.newsfeed.domain.user.repository;
 
+import org.springfeed.newsfeed.domain.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
 @Repository
-public interface UserRepository {
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmail(String email);
     // Todo
 }
