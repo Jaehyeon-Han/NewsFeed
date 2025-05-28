@@ -2,11 +2,12 @@ package org.springfeed.newsfeed.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
 @Getter
-// @Setter (필요 시 주석 해제)
+@Setter
 public class User extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
