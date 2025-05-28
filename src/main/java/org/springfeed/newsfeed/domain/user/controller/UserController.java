@@ -1,5 +1,6 @@
 package org.springfeed.newsfeed.domain.user.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -81,7 +82,7 @@ public class UserController {
         }
     }
 
-    
+
     // 회원가입과 탈퇴 여기에 구현
     // Todo
     @PostMapping("/signup")
@@ -91,8 +92,12 @@ public class UserController {
     }
 
     @PostMapping("/users/{userId}/delete")
-    public ResponseEntity<Void> delete(@PathVariable Long userId, @RequestBody DeleteAccountRequest request) {
+    public ResponseEntity<Void> delete(@PathVariable Long userId, @Valid @RequestBody DeleteAccountRequest request, HttpServletRequest httpRequest) {
         userService.delete(userId, request.getPassword());
+        HttpSession session = httpRequest.getSession(false);
+        if(session != null) {
+            session.invalidate();
+        }
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
