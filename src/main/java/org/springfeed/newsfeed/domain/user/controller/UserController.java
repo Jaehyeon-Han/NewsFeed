@@ -24,7 +24,7 @@ public class UserController {
     private final UserService userService;
     
     // 유저 조회
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<?> getUser(@PathVariable Long userId) {
         UserResponse userResponse = userService.getUser(userId);
 
@@ -36,7 +36,7 @@ public class UserController {
     }
 
     // 유저 수정
-    @PutMapping("/{userId}")
+    @PutMapping("/users/{userId}")
     public ResponseEntity<?> updateUser(
             @PathVariable Long userId,
             @RequestBody UpdateUserInfoRequest request, HttpSession session) {
@@ -58,7 +58,7 @@ public class UserController {
     }
 
     //비밀번호 수정
-    @PatchMapping("/{userId}/password")
+    @PatchMapping("/users/{userId}/password")
     public ResponseEntity<?> updatePassword(
             @PathVariable Long userId,
             @RequestBody ChangePasswordRequest request,
