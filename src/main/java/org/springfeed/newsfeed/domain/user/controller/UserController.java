@@ -10,7 +10,7 @@ import org.springfeed.newsfeed.domain.user.dto.request.SignUpRequest;
 import org.springfeed.newsfeed.domain.user.dto.request.UpdateUserInfoRequest;
 import org.springfeed.newsfeed.domain.user.dto.response.UserResponse;
 import org.springfeed.newsfeed.domain.user.service.UserService;
-import org.springfeed.newsfeed.global.auth.dto.response.SessionResponse;
+import org.springfeed.newsfeed.global.auth.dto.response.SessionUserDataResponse;
 import org.springfeed.newsfeed.global.config.SessionType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,7 @@ public class UserController {
     public ResponseEntity<?> updateUser(
             @PathVariable Long userId,
             @Valid @RequestBody UpdateUserInfoRequest request,
-            @SessionAttribute(name = SessionType.USER) SessionResponse currentUser) {
+            @SessionAttribute(name = SessionType.USER) SessionUserDataResponse currentUser) {
 
         try {
                 UserResponse response = userService.updateUser(userId, request, currentUser);
@@ -54,21 +54,21 @@ public class UserController {
     public ResponseEntity<?> updatePassword(
             @PathVariable Long userId,
             @Valid @RequestBody ChangePasswordRequest request,
-            @SessionAttribute(name = SessionType.USER) SessionResponse currentUser) {
+            @SessionAttribute(name = SessionType.USER) SessionUserDataResponse currentUser) {
 
             userService.updatePassword(userId, request, currentUser);
             return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
     }
 
 
-    // 회원가입과 탈퇴 여기에 구현
-
+    // 회원 가입
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequest request) {
         userService.signUp(request.getEmail(), request.getPassword(), request.getPasswordCheck(), request.getNickname(), request.getIntroduction());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    // 회원 탈퇴
     @PostMapping("/users/{userId}/delete")
     public ResponseEntity<Void> delete(@PathVariable Long userId, @Valid @RequestBody DeleteAccountRequest request, HttpServletRequest httpRequest) {
         userService.delete(userId, request.getPassword());
