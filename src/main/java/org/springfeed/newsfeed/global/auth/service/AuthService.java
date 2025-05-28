@@ -3,7 +3,7 @@ package org.springfeed.newsfeed.global.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.springfeed.newsfeed.domain.entity.User;
 import org.springfeed.newsfeed.domain.user.repository.UserRepository;
-import org.springfeed.newsfeed.global.auth.dto.response.SessionResponse;
+import org.springfeed.newsfeed.global.auth.dto.response.SessionUserDataResponse;
 import org.springfeed.newsfeed.global.config.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public SessionResponse login(String email, String password) {
+    public SessionUserDataResponse login(String email, String password) {
 
         Optional<User> findUser = userRepository.findByEmail(email);
         if(findUser.isEmpty()) {
@@ -28,6 +28,6 @@ public class AuthService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
-        return new SessionResponse(user.getId(), user.getNickname());
+        return new SessionUserDataResponse(user.getId(), user.getNickname());
     }
 }

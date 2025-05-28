@@ -19,7 +19,7 @@ public class LoginFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String requestURI = request.getRequestURI();
 
-        if(!isWhiteList(requestURI)) {
+        if(!(isWhiteList(requestURI) || requestURI.matches("^/posts/\\d+$"))) {
             HttpSession session = request.getSession(false);
             if(session == null || session.getAttribute(SessionType.USER) == null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
