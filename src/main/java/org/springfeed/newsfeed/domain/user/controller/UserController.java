@@ -3,6 +3,7 @@ package org.springfeed.newsfeed.domain.user.controller;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springfeed.newsfeed.domain.user.dto.request.ChangePasswordRequest;
 import org.springfeed.newsfeed.domain.user.dto.request.DeleteAccountRequest;
 import org.springfeed.newsfeed.domain.user.dto.request.SignUpRequest;
 import org.springfeed.newsfeed.domain.user.dto.request.UpdateUserInfoRequest;
@@ -53,6 +54,30 @@ public class UserController {
             // 본인 아님
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
 
+        }
+    }
+
+    //비밀번호 수정
+    @PatchMapping("/{userId}/password")
+    public ResponseEntity<?> updatePassword(
+            @PathVariable Long userId,
+            @RequestBody ChangePasswordRequest request,
+            HttpSession session
+    ) {
+        try {
+            userService.updatePassword(session, userId, request);
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+
+        } catch (IllegalStateException e) {
+            // 로그인 안된 상태
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+
+        } catch (IllegalArgumentException e) {
+            // 비밀번호 틀림, 본인 아님, 동일한 비밀번호 등
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("비밀번호 변경 중 오류 발생");
         }
     }
 
