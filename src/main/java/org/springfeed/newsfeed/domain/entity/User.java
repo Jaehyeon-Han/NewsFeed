@@ -23,4 +23,15 @@ public class User extends BaseEntity {
 
     @Column(length = 500)
     private String introduction;
+
+    public User(String email, String encodePassword, String nickname, String introduction) {
+        this.email = email;
+        this.passwordHash = encodePassword;
+        this.nickname = nickname;
+        this.introduction = introduction;
+    }
+
+    public User() {
+
+    }
 }

@@ -1,10 +1,14 @@
 # 개발 환경 세팅 가이드
 
-## GIt Clone
+## Git Clone 및 Checkout
+
+프로젝트 넣을 폴더에서 우클릭 → Open Git Bash Here
 
 ```bash
-cd <프로젝트 넣을 폴더>
 git clone https://github.com/Jaehyeon-Han/NewsFeed.git
+cd NewsFeed/
+git branch -r
+git switch -c feat/브랜치명 origin/feat/브랜치명
 ```
 
 ## 데이터베이스 연결
@@ -20,4 +24,5 @@ git clone https://github.com/Jaehyeon-Han/NewsFeed.git
       password: ${DB_PASSWORD}
       driver-class-name: com.mysql.cj.jdbc.Driver
     ```
+    
 - `ddl-auto` 설정은 `create-drop`

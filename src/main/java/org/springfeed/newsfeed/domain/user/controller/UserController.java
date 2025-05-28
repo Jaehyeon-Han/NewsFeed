@@ -1,7 +1,10 @@
 package org.springfeed.newsfeed.domain.user.controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springfeed.newsfeed.domain.user.dto.request.DeleteAccountRequest;
+import org.springfeed.newsfeed.domain.user.dto.request.SignUpRequest;
 import org.springfeed.newsfeed.domain.user.dto.request.UpdateUserInfoRequest;
 import org.springfeed.newsfeed.domain.user.dto.response.UserResponse;
 import org.springfeed.newsfeed.domain.user.service.UserService;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -55,4 +59,16 @@ public class UserController {
     
     // 회원가입과 탈퇴 여기에 구현
     // Todo
+    @PostMapping("/signup")
+    public ResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequest request) {
+        userService.signUp(request.getEmail(), request.getPassword(), request.getPasswordCheck(), request.getNickname(), request.getIntroduction());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/users/{userId}/delete")
+    public ResponseEntity<Void> delete(@PathVariable Long userId, @RequestBody DeleteAccountRequest request) {
+        userService.delete(userId, request.getPassword());
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
 }
