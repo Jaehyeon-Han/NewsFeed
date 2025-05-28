@@ -1,10 +1,13 @@
 package org.springfeed.newsfeed.global.auth.dto.response;
 
-public class UserResponse {
+import lombok.Getter;
+
+@Getter
+public class SessionResponse {
     private Long id;
     private String nickname;
 
-    public UserResponse(Long id, String nickname) {
+    public SessionResponse(Long id, String nickname) {
         this.id = id;
         this.nickname = nickname;
     }

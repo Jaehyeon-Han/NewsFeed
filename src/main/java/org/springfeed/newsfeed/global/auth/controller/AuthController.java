@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springfeed.newsfeed.global.auth.dto.request.LoginRequest;
-import org.springfeed.newsfeed.global.auth.dto.response.UserResponse;
+import org.springfeed.newsfeed.global.auth.dto.response.SessionResponse;
 import org.springfeed.newsfeed.global.auth.service.AuthService;
 import org.springfeed.newsfeed.global.config.SessionType;
 import org.springframework.http.HttpStatus;
@@ -24,7 +24,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
 
-        UserResponse user = authService.login(request.getEmail(), request.getPassword());
+        SessionResponse user = authService.login(request.getEmail(), request.getPassword());
 
         HttpSession session = httpRequest.getSession();
         session.setAttribute(SessionType.USER, user);
