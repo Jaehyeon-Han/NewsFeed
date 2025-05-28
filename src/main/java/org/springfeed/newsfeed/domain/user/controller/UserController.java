@@ -37,7 +37,7 @@ public class UserController {
     @PutMapping("/users/{userId}")
     public ResponseEntity<?> updateUser(
             @PathVariable Long userId,
-            @RequestBody UpdateUserInfoRequest request,
+            @Valid @RequestBody UpdateUserInfoRequest request,
             @SessionAttribute(name = SessionType.USER) SessionResponse currentUser) {
 
         try {
@@ -53,7 +53,7 @@ public class UserController {
     @PatchMapping("/users/{userId}/password")
     public ResponseEntity<?> updatePassword(
             @PathVariable Long userId,
-            @RequestBody ChangePasswordRequest request,
+            @Valid @RequestBody ChangePasswordRequest request,
             @SessionAttribute(name = SessionType.USER) SessionResponse currentUser) {
 
             userService.updatePassword(userId, request, currentUser);
