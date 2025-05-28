@@ -7,7 +7,9 @@ import org.springfeed.newsfeed.domain.user.dto.request.ChangePasswordRequest;
 import org.springfeed.newsfeed.domain.user.dto.request.UpdateUserInfoRequest;
 import org.springfeed.newsfeed.domain.user.dto.response.UserResponse;
 import org.springfeed.newsfeed.domain.user.repository.UserRepository;
+import org.springfeed.newsfeed.global.auth.dto.response.SessionResponse;
 import org.springfeed.newsfeed.global.config.PasswordEncoder;
+import org.springfeed.newsfeed.global.config.SessionType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,24 +63,20 @@ public class UserService {
     @Transactional
     public UserResponse updateUser(HttpSession session, Long userId, UpdateUserInfoRequest request) {
 
-        // 1. 세션에서 로그인된 사용자 ID 확인
-        Long currentUserId = (Long) session.getAttribute("userId");
-
-        if (currentUserId == null) {
-            throw new IllegalStateException("로그인이 필요합니다.");
+        // 1. 로그인 확인 (세션 생성 확인)
+        if (session == null) {
+            throw new IllegalStateException("로그인 먼저 해주세요.");   //세션 없는 경우
         }
 
+        SessionResponse currentUser = (SessionResponse) session.getAttribute(SessionType.USER);
+
         // 2. 본인 확인
-        if (!currentUserId.equals(userId)) {
+        if (!currentUser.getId().equals(userId)) {
             throw new IllegalArgumentException("본인이 아닙니다.");
         }
 
         // 3. 유저 조회
-        User user = userRepository.findById(userId).orElse(null);
-
-//        if (user == null || user.isDeleted()) {
-//            return null; // 예외처리는 나중에
-//        }
+        User user = userRepository.findById(userId).orElse(null);  // 예외처리는 나중에
 
         // 4. 수정
         user.setNickname(request.getNickname());
@@ -91,14 +89,16 @@ public class UserService {
     // 비밀번호 수정
     @Transactional
     public void updatePassword(HttpSession session, Long userId, ChangePasswordRequest request) {
-        // 1. 로그인 확인
-        Long currentUserId = (Long) session.getAttribute("userId");
-        if (currentUserId == null) {
-            throw new IllegalStateException("로그인이 필요합니다.");
+
+        // 1. 로그인 확인 (세션 생성 확인)
+        if (session == null) {
+            throw new IllegalStateException("로그인 먼저 해주세요.");   //세션 없는 경우
         }
 
+        SessionResponse currentUser = (SessionResponse) session.getAttribute(SessionType.USER);
+
         // 2. 본인 확인
-        if (!currentUserId.equals(userId)) {
+        if (!currentUser.getId().equals(userId)) {
             throw new IllegalArgumentException("본인만 비밀번호를 수정할 수 있습니다.");
         }
 

@@ -12,14 +12,13 @@ import org.springfeed.newsfeed.domain.user.dto.response.UserResponse;
 import org.springfeed.newsfeed.domain.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -77,8 +76,6 @@ public class UserController {
             // 비밀번호 틀림, 본인 아님, 동일한 비밀번호 등
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("비밀번호 변경 중 오류 발생");
         }
     }
 
