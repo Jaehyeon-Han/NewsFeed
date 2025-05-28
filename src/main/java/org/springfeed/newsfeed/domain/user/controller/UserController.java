@@ -71,11 +71,12 @@ public class UserController {
     // 회원 탈퇴
     @PostMapping("/users/{userId}/delete")
     public ResponseEntity<Void> delete(@PathVariable Long userId, @Valid @RequestBody DeleteAccountRequest request, HttpServletRequest httpRequest) {
-        userService.delete(userId, request.getPassword());
         HttpSession session = httpRequest.getSession(false);
-        if(session != null) {
-            session.invalidate();
-        }
+        SessionUserDataResponse userData = (SessionUserDataResponse) session.getAttribute(SessionType.USER);
+
+        userService.delete(userId, request.getPassword(), userData);
+        session.invalidate();
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

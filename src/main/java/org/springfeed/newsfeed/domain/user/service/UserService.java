@@ -39,7 +39,11 @@ public class UserService {
 
     //회원 탈퇴
     @Transactional
-    public void delete(Long userId, String password) {
+    public void delete(Long userId, String password, SessionUserDataResponse userData) {
+
+        if(!userData.getId().equals(userId)) {
+            throw new RuntimeException("본인이 아닙니다.");
+        }
 
         Optional<User> findUser = userRepository.findById(userId);
         if(findUser.isEmpty()) {
