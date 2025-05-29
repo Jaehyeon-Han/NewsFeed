@@ -8,7 +8,7 @@ import org.springfeed.newsfeed.domain.follow.dto.response.FollowerListResponse;
 import org.springfeed.newsfeed.domain.follow.dto.response.FollowingListResponse;
 import org.springfeed.newsfeed.domain.follow.repository.FollowRepository;
 import org.springfeed.newsfeed.domain.follow.dto.response.FollowUserResponse;
-import org.springfeed.newsfeed.domain.user.repository.FakeUserRepository;
+import org.springfeed.newsfeed.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +19,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FollowService {
     private final FollowRepository followRepository;
-    private final FakeUserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public FollowResponse followUser(Long followingId) {
-        Long currentUserId = 2L;
+    public FollowResponse followUser(Long currentUserId, Long followingId) {
 
         User follower = userRepository.findById(currentUserId).orElseThrow(() -> new RuntimeException("로그인한 사용자를 찾을 수 없습니다."));
 
@@ -70,8 +69,7 @@ public class FollowService {
     }
 
     @Transactional
-    public void unfollowUser(Long followingId) {
-        Long currentUserId = 2L;
+    public void unfollowUser(Long currentUserId, Long followingId) {
 
         Follow follow = followRepository.findByFollowerIdAndFollowingId(currentUserId, followingId)
                 .orElseThrow(() -> new IllegalArgumentException("팔로우한 내역이 없습니다."));
