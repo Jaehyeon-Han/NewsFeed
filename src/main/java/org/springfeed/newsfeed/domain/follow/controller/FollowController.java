@@ -25,7 +25,7 @@ public class FollowController {
 
         FollowResponse followResponse = followService.followUser(currentUserId, followRequest.getFollowingId());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(followResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(followResponse);
     }
 
     @GetMapping("/followings/{userId}")
