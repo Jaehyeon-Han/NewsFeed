@@ -2,11 +2,11 @@ package org.springfeed.newsfeed.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
 @Getter
-// @Setter (필요 시 주석 해제)
 public class User extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -15,11 +15,25 @@ public class User extends BaseEntity {
     private String email;
 
     @Column(name = "password_hash", nullable = false, length = 255)
+    @Setter
     private String passwordHash;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false, length = 20)
+    @Setter
     private String nickname;
 
     @Column(length = 500)
+    @Setter
     private String introduction;
+
+    public User(String email, String encodePassword, String nickname, String introduction) {
+        this.email = email;
+        this.passwordHash = encodePassword;
+        this.nickname = nickname;
+        this.introduction = introduction;
+    }
+
+    public User() {
+
+    }
 }
