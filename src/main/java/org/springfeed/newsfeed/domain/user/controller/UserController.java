@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class UserController {
+
     private final UserService userService;
 
     // 유저 조회
@@ -29,32 +30,26 @@ public class UserController {
     public ResponseEntity<UserResponse> getUser(@PathVariable Long userId) {
         UserResponse userResponse = userService.getUser(userId);
 
-        return ResponseEntity.ok(userResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
     }
 
     // 유저 수정
     @PutMapping("/users/{userId}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable Long userId, @Valid @RequestBody UpdateUserInfoRequest request,
-            @SessionAttribute(name = SessionType.USER) Long currentUser) {
+                                                   @SessionAttribute(name = SessionType.USER) Long currentUser) {
 
-        try {
-            UserResponse response = userService.updateUser(userId, request, currentUser);
-            return ResponseEntity.ok(response);
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        UserResponse response = userService.updateUser(userId, request, currentUser);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     //비밀번호 수정
     @PatchMapping("/users/{userId}/password")
-    public ResponseEntity<String> updatePassword(@PathVariable Long userId, @Valid @RequestBody ChangePasswordRequest request,
-            @SessionAttribute(name = SessionType.USER) Long currentUser) {
+    public ResponseEntity<Void> updatePassword(@PathVariable Long userId, @Valid @RequestBody ChangePasswordRequest request,
+                                               @SessionAttribute(name = SessionType.USER) Long currentUser) {
 
         userService.updatePassword(userId, request, currentUser);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
-
 
     // 회원 가입
     @PostMapping("/signup")
@@ -67,9 +62,9 @@ public class UserController {
     @PostMapping("/users/{userId}/delete")
     public ResponseEntity<Void> delete(@PathVariable Long userId, @Valid @RequestBody DeleteAccountRequest request, HttpServletRequest httpRequest) {
         HttpSession session = httpRequest.getSession(false);
-        Long userData = (Long) session.getAttribute(SessionType.USER);
+        Long currentUser = (Long) session.getAttribute(SessionType.USER);
 
-        userService.delete(userId, request.getPassword(), userData);
+        userService.delete(userId, request.getPassword(), currentUser);
         session.invalidate();
 
         return ResponseEntity.status(HttpStatus.OK).build();

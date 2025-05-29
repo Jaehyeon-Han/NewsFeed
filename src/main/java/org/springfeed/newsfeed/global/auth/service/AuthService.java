@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springfeed.newsfeed.domain.entity.User;
 import org.springfeed.newsfeed.domain.user.repository.UserRepository;
 import org.springfeed.newsfeed.global.config.PasswordEncoder;
+import org.springfeed.newsfeed.global.error.exception.PasswordMismatchException;
+import org.springfeed.newsfeed.global.error.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,12 +21,13 @@ public class AuthService {
 
         Optional<User> findUser = userRepository.findByEmail(email);
         if(findUser.isEmpty()) {
-            throw new RuntimeException("해당 유저가 없습니다.");
+            throw new UserNotFoundException();
         }
+
         User user = findUser.get();
 
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+            throw new PasswordMismatchException();
         }
 
         return user.getId();

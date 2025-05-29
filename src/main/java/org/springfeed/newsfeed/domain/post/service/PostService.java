@@ -7,29 +7,21 @@ import org.springfeed.newsfeed.domain.entity.User;
 import org.springfeed.newsfeed.domain.post.dto.response.PostResponse;
 import org.springfeed.newsfeed.domain.post.repository.PostRepository;
 import org.springfeed.newsfeed.domain.user.repository.UserRepository;
+import org.springfeed.newsfeed.global.error.exception.AccessDeniedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
+
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
     public PostResponse save(String title, String content, long userId) {
 
-        Optional<User> findUser = userRepository.findById(userId);
-
-        if(findUser.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        User foundUser = findUser.get();
+        User foundUser = userRepository.findByIdOrElseThrow(userId);
 
         Post post = new Post(title, content);
         post.setUser(foundUser);
@@ -37,41 +29,37 @@ public class PostService {
         Post createdPost = postRepository.save(post);
 
         return new PostResponse(
-                createdPost.getId(),
-                createdPost.getTitle(),
-                createdPost.getContents(),
-                foundUser.getId(),
-                foundUser.getNickname(),
-                createdPost.getCreatedAt(),
-                createdPost.getLastModifiedAt()
+            createdPost.getId(),
+            createdPost.getTitle(),
+            createdPost.getContents(),
+            foundUser.getId(),
+            foundUser.getNickname(),
+            createdPost.getCreatedAt(),
+            createdPost.getLastModifiedAt()
         );
     }
 
     public PostResponse findById(long id) {
-        // Todo
         Post foundPost = postRepository.findPostByIdOrElseThrow(id);
         User author = foundPost.getAuthor();
 
         return new PostResponse(
-                foundPost.getId(),
-                foundPost.getTitle(),
-                foundPost.getContents(),
-                author.getId(),
-                author.getNickname(),
-                foundPost.getCreatedAt(),
-                foundPost.getLastModifiedAt()
+            foundPost.getId(),
+            foundPost.getTitle(),
+            foundPost.getContents(),
+            author.getId(),
+            author.getNickname(),
+            foundPost.getCreatedAt(),
+            foundPost.getLastModifiedAt()
         );
     }
 
     @Transactional
     public PostResponse updateById(long postId, long userId, String title, String content) {
-        // Todo
         Post foundPost = postRepository.findPostByIdOrElseThrow(postId);
         User author = foundPost.getAuthor();
 
-        if(!foundPost.getAuthor().getId().equals(userId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
+        verifyAuthorOrThrow(userId, author);
 
         foundPost.setTitle(title);
         foundPost.setContents(content);
@@ -85,23 +73,20 @@ public class PostService {
         postRepository.flush();
 
         return new PostResponse(
-                foundPost.getId(),
-                foundPost.getTitle(),
-                foundPost.getContents(),
-                author.getId(),
-                author.getNickname(),
-                foundPost.getCreatedAt(),
-                foundPost.getLastModifiedAt()
+            foundPost.getId(),
+            foundPost.getTitle(),
+            foundPost.getContents(),
+            author.getId(),
+            author.getNickname(),
+            foundPost.getCreatedAt(),
+            foundPost.getLastModifiedAt()
         );
     }
 
     public void deleteById(long postId, long userId) {
-        // Todo
         Post foundPost = postRepository.findPostByIdOrElseThrow(postId);
 
-        if(!foundPost.getAuthor().getId().equals(userId)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
+        verifyAuthorOrThrow(userId, foundPost.getAuthor());
 
         postRepository.delete(foundPost);
     }
@@ -112,17 +97,26 @@ public class PostService {
         return postPage.map(this::convertToResponse);
     }
 
-
     // Post를 PostResponse로 변환
     private PostResponse convertToResponse(Post post) {
         return PostResponse.builder()
-                .postId(post.getId())
-                .title(post.getTitle())
-                .content(post.getContents())
-                .authorId(post.getAuthor().getId())
-                .author(post.getAuthor().getNickname())
-                .createdAt(post.getCreatedAt())
-                .lastModifiedAt(post.getLastModifiedAt())
-                .build();
+            .postId(post.getId())
+            .title(post.getTitle())
+            .content(post.getContents())
+            .authorId(post.getAuthor().getId())
+            .author(post.getAuthor().getNickname())
+            .createdAt(post.getCreatedAt())
+            .lastModifiedAt(post.getLastModifiedAt())
+            .build();
+    }
+
+    private void verifyAuthorOrThrow(long userId, User author) {
+        if (isNotAuthor(userId, author)) {
+            throw new AccessDeniedException();
+        }
+    }
+
+    private boolean isNotAuthor(long userId, User author) {
+        return !author.getId().equals(userId);
     }
 }

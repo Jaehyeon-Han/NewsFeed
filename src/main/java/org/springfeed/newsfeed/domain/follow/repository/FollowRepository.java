@@ -1,7 +1,7 @@
 package org.springfeed.newsfeed.domain.follow.repository;
 
 import org.springfeed.newsfeed.domain.entity.Follow;
-import org.springfeed.newsfeed.domain.entity.User;
+import org.springfeed.newsfeed.global.error.exception.FollowNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +16,10 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     // 특정 사용자 간의 팔로우 관계 조회
     Optional<Follow> findByFollowerIdAndFollowingId(Long followerId, Long followingId);
+
+    default Follow findByFollowerIdAndFollowingIdOrElseThrow(Long followerId, Long followingId) {
+        return findByFollowerIdAndFollowingId(followerId, followingId).orElseThrow(FollowNotFoundException::new);
+    }
 
     // followerId 사용자가 팔로우한 모든 목록 조회 (내가 팔로우한 사람들)
     List<Follow> findByFollowerId(Long followerId);

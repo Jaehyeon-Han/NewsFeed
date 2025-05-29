@@ -28,6 +28,7 @@ public class FollowController {
         return ResponseEntity.status(HttpStatus.OK).body(followResponse);
     }
 
+    // 해당 사용자가 팔로우하는 사용자 목록을 반환한다.
     @GetMapping("/followings/{userId}")
     public ResponseEntity<FollowingListResponse> getFollowings(@PathVariable Long userId){
         FollowingListResponse followings = followService.getFollowings(userId);
@@ -35,6 +36,7 @@ public class FollowController {
         return ResponseEntity.status(HttpStatus.OK).body(followings);
     }
 
+    // 해당 사용자를 팔로우하는 사용자 목록을 반환한다.
     @GetMapping("/followers/{userId}")
     public ResponseEntity<FollowerListResponse> getFollowers(@PathVariable Long userId){
         FollowerListResponse Followers = followService.getFollowers(userId);
