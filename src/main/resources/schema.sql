@@ -22,3 +22,14 @@ CREATE TABLE `Posts`
     PRIMARY KEY (`id`),
     FOREIGN KEY (`author_id`) REFERENCES `Users` (`id`)
 );
+
+CREATE TABLE `Follows`
+(
+    `id`                  BIGINT NOT NULL AUTO_INCREMENT COMMENT '팔로우 고유 식별자',
+    `follower_id`         BIGINT NOT NULL COMMENT '팔로우 건 사람 (User)',
+    `following_id`        BIGINT NOT NULL COMMENT '팔로우 당한 사람 (User)',
+    `started_following_at` DATETIME NOT NULL COMMENT '팔로우 시작 시각',
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`follower_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`following_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE
+);
