@@ -3,7 +3,7 @@ CREATE TABLE `Users`
     `id`               BIGINT       NOT NULL AUTO_INCREMENT COMMENT '고유 식별자',
     `email`            VARCHAR(255) NOT NULL COMMENT '아이디 역할 이메일',
     `password_hash`    VARCHAR(255) NOT NULL COMMENT '비밀번호',
-    `nickname`         VARCHAR(10)  NOT NULL COMMENT '닉네임',
+    `nickname`         VARCHAR(20)  NOT NULL COMMENT '닉네임',
     `introduction`     VARCHAR(500) DEFAULT '' COMMENT '자기소개',
     `created_at`       DATETIME     NOT NULL COMMENT '회원 가입 시각',
     `last_modified_at` DATETIME     NOT NULL COMMENT '마지막 정보 수정 시각',

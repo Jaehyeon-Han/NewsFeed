@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -21,7 +23,13 @@ public class PostService {
 
     public PostResponse save(String title, String content, long userId) {
 
-        User foundUser = userRepository.findUserByIdOrElseThrow(userId);
+        Optional<User> findUser = userRepository.findById(userId);
+
+        if(findUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+
+        User foundUser = findUser.get();
 
         Post post = new Post(title, content);
         post.setUser(foundUser);
