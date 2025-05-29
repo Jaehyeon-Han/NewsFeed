@@ -22,8 +22,8 @@ public class PostController {
     // 게시글 작성
     @PostMapping("/new")
     public ResponseEntity<PostResponse> create(
-            @RequestBody CreatePostRequest createPostRequest,
-            @SessionAttribute(name = "user") Object userData
+            @RequestBody CreatePostRequest createPostRequest
+            // @SessionAttribute(name = "user") Object userData
     ) {
         PostResponse postResponse = postService.save(
                 createPostRequest.getTitle(),
@@ -35,20 +35,19 @@ public class PostController {
     }
 
     // 전체 게시글 페이지 조회
-    @GetMapping // Fixme: 페이지를 구현하려면 ? 대신 들어갈 자료구조는?
+    @GetMapping
     public ResponseEntity<Page<PostResponse>> getPostResponsePage(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "createdAt") String sortBy
-            // Todo: 페이징 객체 내부에서 정렬기준을 받으려면?
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
     ) {
-        // Todo: 서비스 객체는 어떤 타입을 반환해야 할까?
         int size = 10;
 
         Pageable pageable = PageRequest.of(
                 page - 1,
                 size,
-                Sort.Direction.DESC,
-                sortBy
+                Sort.by(Sort.Direction.fromString(sortDir),
+                sortBy)
         );
 
         Page<PostResponse> postPage = postService.getPostPage(pageable);

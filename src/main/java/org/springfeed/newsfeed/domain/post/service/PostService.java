@@ -105,6 +105,7 @@ public class PostService {
                 .id(post.getId())
                 .title(post.getTitle())
                 .contents(post.getContents())
+                .authorId(post.getAuthor().getId())
                 .author(post.getAuthor().getNickname())
                 .createdAt(post.getCreatedAt())
                 .modifiedAt(post.getLastModifiedAt())
