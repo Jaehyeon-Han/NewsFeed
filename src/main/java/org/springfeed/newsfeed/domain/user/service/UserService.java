@@ -6,7 +6,6 @@ import org.springfeed.newsfeed.domain.user.dto.request.ChangePasswordRequest;
 import org.springfeed.newsfeed.domain.user.dto.request.UpdateUserInfoRequest;
 import org.springfeed.newsfeed.domain.user.dto.response.UserResponse;
 import org.springfeed.newsfeed.domain.user.repository.UserRepository;
-import org.springfeed.newsfeed.global.auth.dto.response.SessionUserDataResponse;
 import org.springfeed.newsfeed.global.config.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,9 +38,9 @@ public class UserService {
 
     //회원 탈퇴
     @Transactional
-    public void delete(Long userId, String password, SessionUserDataResponse userData) {
+    public void delete(Long userId, String password, Long userData) {
 
-        if(!userData.getId().equals(userId)) {
+        if(!userData.equals(userId)) {
             throw new RuntimeException("본인이 아닙니다.");
         }
 
@@ -69,9 +68,9 @@ public class UserService {
 
     // 유저 정보 수정
     @Transactional
-    public UserResponse updateUser(Long userId, UpdateUserInfoRequest request, SessionUserDataResponse currentUser) {
+    public UserResponse updateUser(Long userId, UpdateUserInfoRequest request, Long currentUser) {
 
-        if (!currentUser.getId().equals(userId)) {
+        if (!currentUser.equals(userId)) {
             throw new IllegalArgumentException("본인이 아닙니다.");
         }
 
@@ -87,9 +86,9 @@ public class UserService {
 
     // 비밀번호 수정
     @Transactional
-    public void updatePassword(Long userId, ChangePasswordRequest request, SessionUserDataResponse currentUser) {
+    public void updatePassword(Long userId, ChangePasswordRequest request, Long currentUser) {
 
-        if (!currentUser.getId().equals(userId)) {
+        if (!currentUser.equals(userId)) {
             throw new IllegalArgumentException("본인만 비밀번호를 수정할 수 있습니다.");
         }
 

@@ -10,7 +10,6 @@ import org.springfeed.newsfeed.domain.user.dto.request.SignUpRequest;
 import org.springfeed.newsfeed.domain.user.dto.request.UpdateUserInfoRequest;
 import org.springfeed.newsfeed.domain.user.dto.response.UserResponse;
 import org.springfeed.newsfeed.domain.user.service.UserService;
-import org.springfeed.newsfeed.global.auth.dto.response.SessionUserDataResponse;
 import org.springfeed.newsfeed.global.config.SessionType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +35,7 @@ public class UserController {
     // 유저 수정
     @PutMapping("/users/{userId}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable Long userId, @Valid @RequestBody UpdateUserInfoRequest request,
-            @SessionAttribute(name = SessionType.USER) SessionUserDataResponse currentUser) {
+            @SessionAttribute(name = SessionType.USER) Long currentUser) {
 
         try {
             UserResponse response = userService.updateUser(userId, request, currentUser);
@@ -50,7 +49,7 @@ public class UserController {
     //비밀번호 수정
     @PatchMapping("/users/{userId}/password")
     public ResponseEntity<String> updatePassword(@PathVariable Long userId, @Valid @RequestBody ChangePasswordRequest request,
-            @SessionAttribute(name = SessionType.USER) SessionUserDataResponse currentUser) {
+            @SessionAttribute(name = SessionType.USER) Long currentUser) {
 
         userService.updatePassword(userId, request, currentUser);
         return ResponseEntity.ok().build();
@@ -68,7 +67,7 @@ public class UserController {
     @PostMapping("/users/{userId}/delete")
     public ResponseEntity<Void> delete(@PathVariable Long userId, @Valid @RequestBody DeleteAccountRequest request, HttpServletRequest httpRequest) {
         HttpSession session = httpRequest.getSession(false);
-        SessionUserDataResponse userData = (SessionUserDataResponse) session.getAttribute(SessionType.USER);
+        Long userData = (Long) session.getAttribute(SessionType.USER);
 
         userService.delete(userId, request.getPassword(), userData);
         session.invalidate();
