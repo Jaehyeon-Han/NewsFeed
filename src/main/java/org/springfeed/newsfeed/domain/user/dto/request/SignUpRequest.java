@@ -27,5 +27,5 @@ public class SignUpRequest {
     private String nickname;
 
     @Size(max = 500, message = "소개글은 500자 이하로 입력해주세요.")
-    private String introduction;
+    private String introduction = "";   //디폴트값 설정
 }
