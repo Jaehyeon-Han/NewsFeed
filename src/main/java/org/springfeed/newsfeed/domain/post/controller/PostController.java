@@ -5,6 +5,7 @@ import org.springfeed.newsfeed.domain.post.dto.request.CreatePostRequest;
 import org.springfeed.newsfeed.domain.post.dto.request.UpdatePostRequest;
 import org.springfeed.newsfeed.domain.post.dto.response.PostResponse;
 import org.springfeed.newsfeed.domain.post.service.PostService;
+import org.springfeed.newsfeed.global.config.SessionType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,13 +23,13 @@ public class PostController {
     // 게시글 작성
     @PostMapping("/new")
     public ResponseEntity<PostResponse> create(
-            @RequestBody CreatePostRequest createPostRequest
-            // @SessionAttribute(name = "user") Object userData
+            @RequestBody CreatePostRequest createPostRequest,
+            @SessionAttribute(name = SessionType.USER) Long currentId
     ) {
         PostResponse postResponse = postService.save(
                 createPostRequest.getTitle(),
                 createPostRequest.getContent(),
-                1L  // Fixme
+                currentId
         );
 
         return ResponseEntity.ok(postResponse);
@@ -68,12 +69,12 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> updateById(
             @PathVariable(name = "id") long postId,
-            @SessionAttribute(name = "user") Object userData, // Fixme
+            @SessionAttribute(name = SessionType.USER) Long currentId,
             @RequestBody UpdatePostRequest request
     ) {
         PostResponse postResponse = postService.updateById(
                 postId,
-                1L, // Fixme
+                currentId,
                 request.getTitle(),
                 request.getContent());
 
@@ -83,10 +84,10 @@ public class PostController {
     // 게시글 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(
-            @SessionAttribute(name = "user") Object userData, // Fixme
+            @SessionAttribute(name = SessionType.USER) Long currentId,
             @PathVariable(name = "id") long postId) {
 
-        postService.deleteById(postId, 1L);
+        postService.deleteById(postId, currentId);
         return ResponseEntity.ok().build();
     }
 }

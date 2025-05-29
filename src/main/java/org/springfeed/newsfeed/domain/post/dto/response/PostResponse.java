@@ -11,22 +11,22 @@ import java.time.LocalDateTime;
 public class PostResponse {
     // Todo
 
-    private final Long id;
+    private final Long postId;
     private final String title;
-    private final String contents;
+    private final String content;
     private final Long authorId;
     private final String author;
     private final LocalDateTime createdAt;
-    private final LocalDateTime modifiedAt;
+    private final LocalDateTime lastModifiedAt;
 
-    public PostResponse(Long id, String title, String contents, Long authorId, String author, LocalDateTime createdAt, LocalDateTime modifiedAt) {
-        this.id = id;
+    public PostResponse(Long id, String title, String content, Long authorId, String author, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        this.postId = id;
         this.title = title;
-        this.contents = contents;
+        this.content = content;
         this.authorId = authorId;
         this.author = author;
         this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
+        this.lastModifiedAt = modifiedAt;
     }
 
 }

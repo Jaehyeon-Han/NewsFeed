@@ -76,7 +76,13 @@ public class PostService {
         foundPost.setTitle(title);
         foundPost.setContents(content);
 
-        postRepository.save(foundPost);
+        /*
+            1. UPDATE 쿼리가 DB에 실행됨
+            2. Hibernate가 DB에서 자동 생성된 값들을 다시 가져와서
+            3. 1차 캐시의 엔티티 객체도 함께 업데이트함
+            4. 업데이트된 getLastModifiedAt를 PostResponse에 넘겨줌
+         */
+        postRepository.flush();
 
         return new PostResponse(
                 foundPost.getId(),
@@ -110,13 +116,13 @@ public class PostService {
     // Post를 PostResponse로 변환
     private PostResponse convertToResponse(Post post) {
         return PostResponse.builder()
-                .id(post.getId())
+                .postId(post.getId())
                 .title(post.getTitle())
-                .contents(post.getContents())
+                .content(post.getContents())
                 .authorId(post.getAuthor().getId())
                 .author(post.getAuthor().getNickname())
                 .createdAt(post.getCreatedAt())
-                .modifiedAt(post.getLastModifiedAt())
+                .lastModifiedAt(post.getLastModifiedAt())
                 .build();
     }
 }
