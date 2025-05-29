@@ -7,6 +7,7 @@ import org.springfeed.newsfeed.domain.follow.dto.response.FollowResponse;
 import org.springfeed.newsfeed.domain.follow.dto.response.FollowerListResponse;
 import org.springfeed.newsfeed.domain.follow.dto.response.FollowingListResponse;
 import org.springfeed.newsfeed.domain.follow.service.FollowService;
+import org.springfeed.newsfeed.global.config.SessionType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,11 @@ public class FollowController {
     private final FollowService followService;
 
     @PostMapping
-    public ResponseEntity<FollowResponse> followUser(@RequestBody @Valid FollowRequest followRequest){
-        FollowResponse followResponse = followService.followUser(followRequest.getFollowingId());
+    public ResponseEntity<FollowResponse> followUser(
+            @SessionAttribute (name = SessionType.USER) Long currentUserId,
+            @RequestBody @Valid FollowRequest followRequest){
+
+        FollowResponse followResponse = followService.followUser(currentUserId, followRequest.getFollowingId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(followResponse);
     }
@@ -39,8 +43,10 @@ public class FollowController {
     }
 
     @DeleteMapping("/{followingId}")
-    public ResponseEntity<Void> unfollowUser(@PathVariable Long followingId){
-        followService.unfollowUser(followingId);
+    public ResponseEntity<Void> unfollowUser(
+            @SessionAttribute (name = SessionType.USER) Long currentUserId,
+            @PathVariable Long followingId){
+        followService.unfollowUser(currentUserId, followingId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
