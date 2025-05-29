@@ -1,5 +1,6 @@
 package org.springfeed.newsfeed.domain.post.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springfeed.newsfeed.domain.post.dto.request.CreatePostRequest;
 import org.springfeed.newsfeed.domain.post.dto.request.UpdatePostRequest;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,71 +25,72 @@ public class PostController {
     // 게시글 작성
     @PostMapping("/new")
     public ResponseEntity<PostResponse> create(
-            @RequestBody CreatePostRequest createPostRequest,
-            @SessionAttribute(name = SessionType.USER) Long currentId
+        @Valid @RequestBody CreatePostRequest createPostRequest,
+        @SessionAttribute(name = SessionType.USER) Long currentId
     ) {
         PostResponse postResponse = postService.save(
-                createPostRequest.getTitle(),
-                createPostRequest.getContent(),
-                currentId
+            createPostRequest.getTitle(),
+            createPostRequest.getContent(),
+            currentId
         );
 
-        return ResponseEntity.ok(postResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(postResponse);
     }
 
     // 전체 게시글 페이지 조회
     @GetMapping
     public ResponseEntity<Page<PostResponse>> getPostResponsePage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "createdAt") String sortBy,
+        @RequestParam(defaultValue = "desc") String sortDir
     ) {
         int size = 10;
 
         Pageable pageable = PageRequest.of(
-                page - 1,
-                size,
-                Sort.by(Sort.Direction.fromString(sortDir),
+            page - 1,
+            size,
+            Sort.by(Sort.Direction.fromString(sortDir),
                 sortBy)
         );
 
+        // Fixme: 현재 응답 페이지 0부터 시작함
         Page<PostResponse> postPage = postService.getPostPage(pageable);
 
-        return ResponseEntity.ok(postPage);
+        return ResponseEntity.status(HttpStatus.OK).body(postPage);
     }
 
     // 게시글 단건 조회
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> findById(
-            @PathVariable long id) {
+        @PathVariable long id) {
         PostResponse postResponse = postService.findById(id);
 
-        return ResponseEntity.ok(postResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(postResponse);
     }
 
     // 게시글 수정
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> updateById(
-            @PathVariable(name = "id") long postId,
-            @SessionAttribute(name = SessionType.USER) Long currentId,
-            @RequestBody UpdatePostRequest request
+        @PathVariable(name = "id") long postId,
+        @SessionAttribute(name = SessionType.USER) Long currentId,
+        @RequestBody @Valid UpdatePostRequest request
     ) {
         PostResponse postResponse = postService.updateById(
-                postId,
-                currentId,
-                request.getTitle(),
-                request.getContent());
+            postId,
+            currentId,
+            request.getTitle(),
+            request.getContent());
 
-        return ResponseEntity.ok(postResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(postResponse);
     }
 
     // 게시글 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(
-            @SessionAttribute(name = SessionType.USER) Long currentId,
-            @PathVariable(name = "id") long postId) {
+        @SessionAttribute(name = SessionType.USER) Long currentId,
+        @PathVariable(name = "id") long postId) {
 
         postService.deleteById(postId, currentId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
