@@ -1,11 +1,13 @@
 package org.springfeed.newsfeed.domain.post.dto.response;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 // 게시글 응답
 @Getter
+@Builder
 public class PostResponse {
     // Todo
 
@@ -26,4 +28,5 @@ public class PostResponse {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
+
 }

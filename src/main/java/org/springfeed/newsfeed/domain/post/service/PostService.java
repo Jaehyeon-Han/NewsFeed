@@ -7,6 +7,8 @@ import org.springfeed.newsfeed.domain.entity.User;
 import org.springfeed.newsfeed.domain.post.dto.response.PostResponse;
 import org.springfeed.newsfeed.domain.post.repository.PostRepository;
 import org.springfeed.newsfeed.domain.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,7 +31,7 @@ public class PostService {
         return new PostResponse(
                 createdPost.getId(),
                 createdPost.getTitle(),
-                createdPost.getContent(),
+                createdPost.getContents(),
                 foundUser.getId(),
                 foundUser.getNickname(),
                 createdPost.getCreatedAt(),
@@ -45,7 +47,7 @@ public class PostService {
         return new PostResponse(
                 foundPost.getId(),
                 foundPost.getTitle(),
-                foundPost.getContent(),
+                foundPost.getContents(),
                 author.getId(),
                 author.getNickname(),
                 foundPost.getCreatedAt(),
@@ -64,14 +66,14 @@ public class PostService {
         }
 
         foundPost.setTitle(title);
-        foundPost.setContent(content);
+        foundPost.setContents(content);
 
         postRepository.save(foundPost);
 
         return new PostResponse(
                 foundPost.getId(),
                 foundPost.getTitle(),
-                foundPost.getContent(),
+                foundPost.getContents(),
                 author.getId(),
                 author.getNickname(),
                 foundPost.getCreatedAt(),
@@ -88,5 +90,24 @@ public class PostService {
         }
 
         postRepository.delete(foundPost);
+    }
+
+    public Page<PostResponse> getPostPage(Pageable pageable) {
+        Page<Post> postPage = postRepository.findAll(pageable);
+
+        return postPage.map(this::convertToResponse);
+    }
+
+
+    // Post를 PostResponse로 변환
+    private PostResponse convertToResponse(Post post) {
+        return PostResponse.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .contents(post.getContents())
+                .author(post.getAuthor().getNickname())
+                .createdAt(post.getCreatedAt())
+                .modifiedAt(post.getLastModifiedAt())
+                .build();
     }
 }

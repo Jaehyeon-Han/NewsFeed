@@ -5,6 +5,10 @@ import org.springfeed.newsfeed.domain.post.dto.request.CreatePostRequest;
 import org.springfeed.newsfeed.domain.post.dto.request.UpdatePostRequest;
 import org.springfeed.newsfeed.domain.post.dto.response.PostResponse;
 import org.springfeed.newsfeed.domain.post.service.PostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,13 +36,24 @@ public class PostController {
 
     // 전체 게시글 페이지 조회
     @GetMapping // Fixme: 페이지를 구현하려면 ? 대신 들어갈 자료구조는?
-    public ResponseEntity<?> getPostResponsePage(
-            @RequestParam(defaultValue = "1") int page
+    public ResponseEntity<Page<PostResponse>> getPostResponsePage(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "createdAt") String sortBy
             // Todo: 페이징 객체 내부에서 정렬기준을 받으려면?
     ) {
         // Todo: 서비스 객체는 어떤 타입을 반환해야 할까?
+        int size = 10;
 
-        return ResponseEntity.ok(null); // Fixme
+        Pageable pageable = PageRequest.of(
+                page - 1,
+                size,
+                Sort.Direction.DESC,
+                sortBy
+        );
+
+        Page<PostResponse> postPage = postService.getPostPage(pageable);
+
+        return ResponseEntity.ok(postPage);
     }
 
     // 게시글 단건 조회
@@ -50,7 +65,6 @@ public class PostController {
         return ResponseEntity.ok(postResponse);
     }
 
-    // 유저 정보 수정처럼 있는 필드만 수정으로 바꿔야하나
     // 게시글 수정
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> updateById(

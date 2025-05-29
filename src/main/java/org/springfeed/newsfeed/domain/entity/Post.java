@@ -21,14 +21,14 @@ public class Post extends BaseEntity {
 
     @Column(nullable = false, length = 500)
     @Setter
-    private String content;
+    private String contents;
 
     public Post() {
     }
 
     public Post(String title, String content) {
         this.title = title;
-        this.content = content;
+        this.contents = content;
     }
 
     public void setUser(User author) {
