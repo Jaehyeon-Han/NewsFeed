@@ -14,7 +14,10 @@ import org.springfeed.newsfeed.domain.post.repository.PostRepository;
 import org.springfeed.newsfeed.domain.user.repository.UserRepository;
 import org.springfeed.newsfeed.global.config.PasswordEncoder;
 import org.springfeed.newsfeed.global.error.exception.AccessDeniedException;
+import org.springframework.data.domain.*;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -82,7 +85,21 @@ class PostServiceTest {
         assertThat(response.getAuthor()).isEqualTo(mockUser.getNickname());
     }
 
-    // 게시물 단건 조회와 페이징 조회도 단순 DTO 생성에 불과
+    @Test
+    @DisplayName("게시물 단건 조회")
+    void should_returnPost_when_findingExistingPost() {
+        Post mockPost = new Post(TITLE, CONTENT);
+        User mockUser = getMockUserWithLoginUserId();
+        mockPost.setUser(mockUser);
+        ReflectionTestUtils.setField(mockPost, "id", NEW_POST_ID);
+        given(postRepository.findPostByIdOrElseThrow(NEW_POST_ID)).willReturn(mockPost);
+
+        PostResponse postResponse = postService.findById(NEW_POST_ID);
+
+        assertThat(postResponse.getAuthorId()).isEqualTo(LOGIN_USER_ID);
+        assertThat(postResponse.getPostId()).isEqualTo(NEW_POST_ID);
+        assertThat(postResponse.getTitle()).isEqualTo(TITLE);
+    }
 
     // 게시물 수정
     @Test
@@ -105,18 +122,64 @@ class PostServiceTest {
 
     @Test
     @DisplayName("다른 사용자의 게시글 수정")
-    // private 메소드 verifyAuthorOrThrow() 검증
+        // private 메소드 verifyAuthorOrThrow() 검증
     void should_throwAccessDeniedException_when_updatePostOfOtherUser() {
         // given
         User mockUser = getMockUserWithLoginUserId();
         Post mockPost = new Post(TITLE, CONTENT);
         ReflectionTestUtils.setField(mockPost, "author", mockUser);
         ReflectionTestUtils.setField(mockPost, "id", NEW_POST_ID);
+        mockPost.setUser(mockUser);
         given(postRepository.findPostByIdOrElseThrow(NEW_POST_ID)).willReturn(mockPost);
 
         // when-then
         assertThatThrownBy(() -> postService.updateById(NEW_POST_ID, ANOTHER_USER_ID, NEW_TITLE, NEW_CONTENT))
             .isInstanceOf(AccessDeniedException.class);
+    }
+
+    // 삭제
+
+    @Test
+    @DisplayName("정상 삭제")
+    void should_delete_when_authorDeleteTheirPost() {
+        User mockUser = getMockUserWithLoginUserId();
+        Post mockPost = new Post(TITLE, CONTENT);
+        ReflectionTestUtils.setField(mockPost, "author", mockUser);
+        ReflectionTestUtils.setField(mockPost, "id", NEW_POST_ID);
+        mockPost.setUser(mockUser);
+        given(postRepository.findPostByIdOrElseThrow(NEW_POST_ID)).willReturn(mockPost);
+
+        postService.deleteById(NEW_POST_ID, LOGIN_USER_ID);
+        then(postRepository).should().delete(mockPost);
+    }
+
+    @Test
+    @DisplayName("포스트 페이지 정상 조회")
+    void should_returnPage_when_thereArePosts() {
+        // given
+        Pageable pageable = PageRequest.of(0, 2, Sort.by("createdAt").descending());
+
+        User author = getMockUserWithLoginUserId();
+        Post post1 = new Post("Title1", "Content1");
+        ReflectionTestUtils.setField(post1, "id", 1L);
+        post1.setUser(author);
+        Post post2 = new Post("Title2", "Content2");
+        ReflectionTestUtils.setField(post2, "id", 2L);
+        post2.setUser(author);
+
+        Page<Post> postPage = new PageImpl<>(List.of(post1, post2), pageable, 2);
+        given(postRepository.findAll(pageable)).willReturn(postPage);
+
+        // when
+        Page<PostResponse> result = postService.getPostPage(pageable);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("Title1");
+        assertThat(result.getContent().get(1).getTitle()).isEqualTo("Title2");
+
+        then(postRepository).should().findAll(pageable);
+        
     }
 
     private User getMockUserWithLoginUserId() {
