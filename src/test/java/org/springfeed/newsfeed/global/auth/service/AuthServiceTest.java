@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.springfeed.newsfeed.constant.UserConstant.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -35,11 +36,7 @@ class AuthServiceTest {
 
     AuthService authService;
 
-    private static final String EMAIL = "user@email.com";
-    private static final String INCORRECT_PASSWORD = "IncorrectPassword1!";
-    private static final String PASSWORD = "password1!";
-    private static final String NICKNAME = "nickname";
-    private static final String INTRODUCTION = "introduction!";
+
 
     @BeforeEach
     void setUp() {
@@ -97,7 +94,7 @@ class AuthServiceTest {
         given(userRepository.findByEmail(EMAIL)).willReturn(Optional.of(mockUser));
 
         // when-then
-        assertThrows(PasswordMismatchException.class, () -> authService.login(EMAIL, INCORRECT_PASSWORD));
+        assertThrows(PasswordMismatchException.class, () -> authService.login(EMAIL, NOT_MATCHING_PASSWORD));
         then(userRepository).should().findByEmail(EMAIL);
     }
 }
