@@ -1,7 +1,7 @@
 package org.springfeed.newsfeed.global.config;
 
-import jakarta.servlet.Filter;
-import org.springfeed.newsfeed.global.filter.LoginFilter;
+import org.springfeed.newsfeed.global.filter.JwtFilter;
+import org.springfeed.newsfeed.global.jwt.JwtUtil;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,12 +10,13 @@ import org.springframework.context.annotation.Configuration;
 public class WebConfig {
 
     @Bean
-    public FilterRegistrationBean loginFilter() {
-        FilterRegistrationBean<Filter>filterRegistrationBean = new FilterRegistrationBean<>();
-        filterRegistrationBean.setFilter(new LoginFilter());
-        filterRegistrationBean.setOrder(1);
-        filterRegistrationBean.addUrlPatterns("/*");
+    public FilterRegistrationBean<JwtFilter> jwtFilter(JwtUtil jwtUtil) {
+        FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
 
-        return filterRegistrationBean;
+        registrationBean.setFilter(new JwtFilter(jwtUtil));
+        registrationBean.setOrder(1);
+        registrationBean.addUrlPatterns("/*");
+
+        return registrationBean;
     }
 }

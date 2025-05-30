@@ -1,12 +1,13 @@
 package org.springfeed.newsfeed.domain.post.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springfeed.newsfeed.domain.post.dto.request.CreatePostRequest;
 import org.springfeed.newsfeed.domain.post.dto.request.UpdatePostRequest;
 import org.springfeed.newsfeed.domain.post.dto.response.PostResponse;
 import org.springfeed.newsfeed.domain.post.service.PostService;
-import org.springfeed.newsfeed.global.config.SessionType;
+import org.springfeed.newsfeed.global.jwt.JwtUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,13 +22,15 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
+    private final JwtUtil jwtUtil;
 
     // 게시글 작성
     @PostMapping("/new")
     public ResponseEntity<PostResponse> create(
         @Valid @RequestBody CreatePostRequest createPostRequest,
-        @SessionAttribute(name = SessionType.USER) Long currentId
-    ) {
+        HttpServletRequest httpRequest) {
+
+        Long currentId = jwtUtil.getUserId(httpRequest);
         PostResponse postResponse = postService.save(
             createPostRequest.getTitle(),
             createPostRequest.getContent(),
@@ -72,9 +75,10 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> updateById(
         @PathVariable(name = "id") long postId,
-        @SessionAttribute(name = SessionType.USER) Long currentId,
-        @RequestBody @Valid UpdatePostRequest request
-    ) {
+        HttpServletRequest httpRequest,
+        @RequestBody @Valid UpdatePostRequest request) {
+
+        Long currentId = jwtUtil.getUserId(httpRequest);
         PostResponse postResponse = postService.updateById(
             postId,
             currentId,
@@ -87,9 +91,10 @@ public class PostController {
     // 게시글 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(
-        @SessionAttribute(name = SessionType.USER) Long currentId,
-        @PathVariable(name = "id") long postId) {
+            HttpServletRequest httpRequest,
+            @PathVariable(name = "id") long postId) {
 
+        Long currentId = jwtUtil.getUserId(httpRequest);
         postService.deleteById(postId, currentId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
