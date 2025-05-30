@@ -61,36 +61,36 @@ public class UserService {
 
     // 유저 정보 수정
     @Transactional
-    public UserResponse updateUser(Long userId, UpdateUserInfoRequest request, Long currentUser) {
+    public UserResponse updateUser(Long userId, String nickname, String introduction, Long currentUser) {
 
         verifyUserIdentityOrThrow(userId, currentUser);
 
         User user = userRepository.findByIdOrElseThrow(userId);
-        user.setNickname(request.getNickname());
-        user.setIntroduction(request.getIntroduction());
+        user.setNickname(nickname);
+        user.setIntroduction(introduction);
 
         return new UserResponse(user);
     }
 
     // 비밀번호 수정
     @Transactional
-    public void updatePassword(Long userId, ChangePasswordRequest request, Long currentUser) {
+    public void updatePassword(Long userId, String currentPassword, String newPassword, Long currentUser) {
 
         verifyUserIdentityOrThrow(userId, currentUser);
 
         User user = userRepository.findByIdOrElseThrow(userId);
 
         // 기존 비밀번호 불일치
-        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
             throw new PasswordMismatchException();
         }
 
         // 변경하려는 비밀번호가 기존과 동일
-        if (passwordEncoder.matches(request.getNewPassword(), user.getPasswordHash())) {
+        if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
             throw new PasswordUnchangedException();
         }
 
-        String newPasswordHash = passwordEncoder.encode(request.getNewPassword());
+        String newPasswordHash = passwordEncoder.encode(newPassword);
         user.setPasswordHash(newPasswordHash);
     }
 

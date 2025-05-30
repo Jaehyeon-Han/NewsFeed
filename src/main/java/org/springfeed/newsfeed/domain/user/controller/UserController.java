@@ -38,7 +38,7 @@ public class UserController {
     public ResponseEntity<UserResponse> updateUser(@PathVariable Long userId, @Valid @RequestBody UpdateUserInfoRequest request,
                                                    @SessionAttribute(name = SessionType.USER) Long currentUser) {
 
-        UserResponse response = userService.updateUser(userId, request, currentUser);
+        UserResponse response = userService.updateUser(userId, request.getNickname(), request.getIntroduction(), currentUser);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -47,7 +47,7 @@ public class UserController {
     public ResponseEntity<Void> updatePassword(@PathVariable Long userId, @Valid @RequestBody ChangePasswordRequest request,
                                                @SessionAttribute(name = SessionType.USER) Long currentUser) {
 
-        userService.updatePassword(userId, request, currentUser);
+        userService.updatePassword(userId, request.getCurrentPassword(), request.getNewPassword(), currentUser);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
