@@ -16,6 +16,7 @@ public class Post extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @Setter
     private User author;
 
     @Column(nullable = false, length = 50)
@@ -32,9 +33,5 @@ public class Post extends BaseEntity {
     public Post(String title, String content) {
         this.title = title;
         this.contents = content;
-    }
-
-    public void setUser(User author) {
-        this.author = author;
     }
 }

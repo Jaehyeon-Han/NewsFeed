@@ -24,7 +24,7 @@ public class PostService {
         User foundUser = userRepository.findByIdOrElseThrow(userId);
 
         Post post = new Post(title, content);
-        post.setUser(foundUser);
+        post.setAuthor(foundUser);
 
         Post createdPost = postRepository.save(post);
 

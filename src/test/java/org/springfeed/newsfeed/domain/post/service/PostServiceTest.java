@@ -90,7 +90,7 @@ class PostServiceTest {
     void should_returnPost_when_findingExistingPost() {
         Post mockPost = new Post(TITLE, CONTENT);
         User mockUser = getMockUserWithLoginUserId();
-        mockPost.setUser(mockUser);
+        mockPost.setAuthor(mockUser);
         ReflectionTestUtils.setField(mockPost, "id", NEW_POST_ID);
         given(postRepository.findPostByIdOrElseThrow(NEW_POST_ID)).willReturn(mockPost);
 
@@ -129,7 +129,7 @@ class PostServiceTest {
         Post mockPost = new Post(TITLE, CONTENT);
         ReflectionTestUtils.setField(mockPost, "author", mockUser);
         ReflectionTestUtils.setField(mockPost, "id", NEW_POST_ID);
-        mockPost.setUser(mockUser);
+        mockPost.setAuthor(mockUser);
         given(postRepository.findPostByIdOrElseThrow(NEW_POST_ID)).willReturn(mockPost);
 
         // when-then
@@ -146,7 +146,7 @@ class PostServiceTest {
         Post mockPost = new Post(TITLE, CONTENT);
         ReflectionTestUtils.setField(mockPost, "author", mockUser);
         ReflectionTestUtils.setField(mockPost, "id", NEW_POST_ID);
-        mockPost.setUser(mockUser);
+        mockPost.setAuthor(mockUser);
         given(postRepository.findPostByIdOrElseThrow(NEW_POST_ID)).willReturn(mockPost);
 
         postService.deleteById(NEW_POST_ID, LOGIN_USER_ID);
@@ -162,10 +162,10 @@ class PostServiceTest {
         User author = getMockUserWithLoginUserId();
         Post post1 = new Post("Title1", "Content1");
         ReflectionTestUtils.setField(post1, "id", 1L);
-        post1.setUser(author);
+        post1.setAuthor(author);
         Post post2 = new Post("Title2", "Content2");
         ReflectionTestUtils.setField(post2, "id", 2L);
-        post2.setUser(author);
+        post2.setAuthor(author);
 
         Page<Post> postPage = new PageImpl<>(List.of(post1, post2), pageable, 2);
         given(postRepository.findAll(pageable)).willReturn(postPage);
