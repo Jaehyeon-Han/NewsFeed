@@ -37,6 +37,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.assertj:assertj-core:4.0.0-M1'
+	testImplementation 'org.mockito:mockito-core:5.18.0'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
