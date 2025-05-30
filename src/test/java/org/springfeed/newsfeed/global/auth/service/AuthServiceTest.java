@@ -36,8 +36,6 @@ class AuthServiceTest {
 
     AuthService authService;
 
-
-
     @BeforeEach
     void setUp() {
         authService = new AuthService(userRepository, passwordEncoder);

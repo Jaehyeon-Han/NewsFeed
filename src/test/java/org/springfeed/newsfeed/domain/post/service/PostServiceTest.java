@@ -179,7 +179,7 @@ class PostServiceTest {
         assertThat(result.getContent().get(1).getTitle()).isEqualTo("Title2");
 
         then(postRepository).should().findAll(pageable);
-        
+
     }
 
     private User getMockUserWithLoginUserId() {

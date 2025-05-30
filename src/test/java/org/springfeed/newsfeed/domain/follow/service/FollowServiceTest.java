@@ -34,7 +34,7 @@ class FollowServiceTest {
 
     @Mock
     FollowRepository followRepository;
-
+    
     @Mock
     UserRepository userRepository;
 

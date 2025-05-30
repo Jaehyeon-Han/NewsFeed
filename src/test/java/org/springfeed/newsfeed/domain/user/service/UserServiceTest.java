@@ -105,7 +105,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("다른 사용자에 대한 요청")
-    // private 메소드인 verifyUserIdentityOrThrow() 에 대한 검증
+        // private 메소드인 verifyUserIdentityOrThrow() 에 대한 검증
     void should_throwAccessDeniedException_when_accessingAccountOfOthers() {
         // when-then
         assertThatThrownBy(() -> userService.delete(OTHER_USER_ID, PASSWORD, LOGIN_ID))
