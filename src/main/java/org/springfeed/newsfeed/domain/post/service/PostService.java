@@ -12,6 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -91,10 +94,24 @@ public class PostService {
         postRepository.delete(foundPost);
     }
 
-    public Page<PostResponse> getPostPage(Pageable pageable) {
-        Page<Post> postPage = postRepository.findAll(pageable);
+    public Page<PostResponse> getPostPage(Pageable pageable, LocalDate startDate, LocalDate endDate) {
 
-        return postPage.map(this::convertToResponse);
+        if(startDate != null && endDate != null)
+        {
+            // atStartOfDay(), atTime() 메소드는 LocalDate -> LocalDateTime로 변환가능한 메소드.
+            // 오늘이 2025-05-30이라고 했을때 startDateTime은 2025-05-30T00:00:00
+            LocalDateTime startDateTime = startDate.atStartOfDay();
+
+            // 오늘이 2025-05-30이라고 했을때 startDateTime은 2025-05-30T23:59:59
+            LocalDateTime endDateTime = endDate.atTime(23, 59, 59, 999_999_999);
+
+            Page<Post> postPage = postRepository.findAllByCreatedAtBetween(startDateTime, endDateTime, pageable);
+            return postPage.map(this::convertToResponse);
+        }
+        else {
+            Page<Post> postPage = postRepository.findAll(pageable);
+            return postPage.map(this::convertToResponse);
+        }
     }
 
     // Post를 PostResponse로 변환
@@ -108,6 +125,12 @@ public class PostService {
             .createdAt(post.getCreatedAt())
             .lastModifiedAt(post.getLastModifiedAt())
             .build();
+    }
+
+    public Page<PostResponse> getPostFollowingPage(Pageable pageable, Long currentId) {
+        Page<Post> postPage = postRepository.findPostsByFollowings(currentId, pageable);
+
+        return postPage.map(this::convertToResponse);
     }
 
     private void verifyAuthorOrThrow(long userId, User author) {
