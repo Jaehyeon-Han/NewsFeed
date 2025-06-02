@@ -33,3 +33,16 @@ CREATE TABLE `Follows`
     FOREIGN KEY (`follower_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`following_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE
 );
+
+CREATE TABLE `Comments`
+(
+    `id`               BIGINT       NOT NULL AUTO_INCREMENT COMMENT '댓글 고유 식별자',
+    `post_id`          BIGINT       NOT NULL COMMENT '게시글 고유 식별자',
+    `author_id`        BIGINT       NOT NULL COMMENT '사용자 고유 식별자',
+    `comment`          VARCHAR(100) NOT NULL COMMENT '내용',
+    `created_at`       DATETIME     NOT NULL COMMENT '최초 댓글 작성 시각',
+    `last_modified_at` DATETIME     NOT NULL COMMENT '마지막 댓글 수정 시각',
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`post_id`) REFERENCES `Posts` (`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`author_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE
+);
