@@ -35,7 +35,8 @@ public class PostController {
     @PostMapping("/new")
     public ResponseEntity<PostResponse> create(
         @Valid @RequestBody CreatePostRequest createPostRequest,
-        HttpServletRequest httpRequest) {
+        HttpServletRequest httpRequest
+    ) {
 
         Long currentId = jwtUtil.getUserId(httpRequest);
         PostResponse postResponse = postService.save(
@@ -71,9 +72,9 @@ public class PostController {
         Pageable customPageable = PageRequest.of(page, size, pageable.getSort());
 
         Page<PostResponse> customPage = new PageImpl<>(
-                postPage.getContent(),
-                customPageable,
-                postPage.getTotalElements()
+            postPage.getContent(),
+            customPageable,
+            postPage.getTotalElements()
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(customPage);
@@ -82,18 +83,18 @@ public class PostController {
     // 팔로우 한 사람의 게시글 조회
     @GetMapping("/following")
     public ResponseEntity<Page<PostResponse>> getPostFollowingPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            HttpServletRequest httpRequest,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "createdAt") String sortBy,
+        @RequestParam(defaultValue = "desc") String sortDir,
+        HttpServletRequest httpRequest
     ) {
 
         Pageable pageable = PageRequest.of(
-                page - 1,
-                size,
-                Sort.by(Sort.Direction.fromString(sortDir),
-                        sortBy)
+            page - 1,
+            size,
+            Sort.by(Sort.Direction.fromString(sortDir),
+                sortBy)
         );
 
         Long currentUserId = jwtUtil.getUserId(httpRequest);
@@ -103,9 +104,9 @@ public class PostController {
         Pageable customPageable = PageRequest.of(page, size, pageable.getSort());
 
         Page<PostResponse> customPage = new PageImpl<>(
-                postPage.getContent(),
-                customPageable,
-                postPage.getTotalElements()
+            postPage.getContent(),
+            customPageable,
+            postPage.getTotalElements()
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(customPage);
@@ -113,8 +114,8 @@ public class PostController {
 
     // 게시글 단건 조회
     @GetMapping("/{id}")
-    public ResponseEntity<PostResponse> findById(
-        @PathVariable long id) {
+    public ResponseEntity<PostResponse> findById(@PathVariable long id) {
+
         PostResponse postResponse = postService.findById(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(postResponse);
@@ -125,9 +126,11 @@ public class PostController {
     public ResponseEntity<PostResponse> updateById(
         @PathVariable(name = "id") long postId,
         HttpServletRequest httpRequest,
-        @RequestBody @Valid UpdatePostRequest request) {
+        @RequestBody @Valid UpdatePostRequest request
+    ) {
 
         Long currentId = jwtUtil.getUserId(httpRequest);
+
         PostResponse postResponse = postService.updateById(
             postId,
             currentId,
@@ -140,11 +143,14 @@ public class PostController {
     // 게시글 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(
-            HttpServletRequest httpRequest,
-            @PathVariable(name = "id") long postId) {
+        HttpServletRequest httpRequest,
+        @PathVariable(name = "id") long postId
+    ) {
 
         Long currentId = jwtUtil.getUserId(httpRequest);
+
         postService.deleteById(postId, currentId);
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

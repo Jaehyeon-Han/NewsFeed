@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
+
     default Post findPostByIdOrElseThrow(Long postId) {
         return findById(postId).orElseThrow(PostNotFoundException::new);
     }
@@ -20,12 +21,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
     @Query("""
-        SELECT p FROM Post p
-        WHERE p.author.id IN (
-            SELECT f.following.id FROM Follow f
-            WHERE f.follower.id = :currentId
-        )
-    """)
+            SELECT p FROM Post p
+            WHERE p.author.id IN (
+                SELECT f.following.id FROM Follow f
+                WHERE f.follower.id = :currentId
+            )
+        """)
     Page<Post> findPostsByFollowings(@Param("currentId") Long currentId, Pageable pageable);
 
 }

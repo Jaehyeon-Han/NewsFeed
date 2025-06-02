@@ -22,7 +22,7 @@ public class AuthService {
     public String login(String email, String password) {
 
         Optional<User> findUser = userRepository.findByEmail(email);
-        if(findUser.isEmpty()) {
+        if (findUser.isEmpty()) {
             throw new UserNotFoundException();
         }
 

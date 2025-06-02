@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 // 회원가입 시 들어올 정보
-// Todo
 @Getter
 public class SignUpRequest {
 

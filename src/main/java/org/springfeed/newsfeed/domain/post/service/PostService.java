@@ -27,7 +27,7 @@ public class PostService {
         User foundUser = userRepository.findByIdOrElseThrow(userId);
 
         Post post = new Post(title, content);
-        post.setUser(foundUser);
+        post.setAuthor(foundUser);
 
         Post createdPost = postRepository.save(post);
 
@@ -96,26 +96,26 @@ public class PostService {
 
     public Page<PostResponse> getPostPage(Pageable pageable, LocalDate startDate, LocalDate endDate) {
 
-        if(startDate != null && endDate != null)
-        {
+        if (startDate != null && endDate != null) {
             // atStartOfDay(), atTime() 메소드는 LocalDate -> LocalDateTime로 변환가능한 메소드.
             // 오늘이 2025-05-30이라고 했을때 startDateTime은 2025-05-30T00:00:00
             LocalDateTime startDateTime = startDate.atStartOfDay();
-
             // 오늘이 2025-05-30이라고 했을때 startDateTime은 2025-05-30T23:59:59
             LocalDateTime endDateTime = endDate.atTime(23, 59, 59, 999_999_999);
 
             Page<Post> postPage = postRepository.findAllByCreatedAtBetween(startDateTime, endDateTime, pageable);
+
             return postPage.map(this::convertToResponse);
-        }
-        else {
+        } else {
             Page<Post> postPage = postRepository.findAll(pageable);
+
             return postPage.map(this::convertToResponse);
         }
     }
 
     // Post를 PostResponse로 변환
     private PostResponse convertToResponse(Post post) {
+
         return PostResponse.builder()
             .postId(post.getId())
             .title(post.getTitle())
@@ -128,12 +128,14 @@ public class PostService {
     }
 
     public Page<PostResponse> getPostFollowingPage(Pageable pageable, Long currentId) {
+
         Page<Post> postPage = postRepository.findPostsByFollowings(currentId, pageable);
 
         return postPage.map(this::convertToResponse);
     }
 
     private void verifyAuthorOrThrow(long userId, User author) {
+
         if (isNotAuthor(userId, author)) {
             throw new AccessDeniedException();
         }

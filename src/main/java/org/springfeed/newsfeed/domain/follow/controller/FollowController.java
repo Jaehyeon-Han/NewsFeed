@@ -53,6 +53,7 @@ public class FollowController {
                                              @PathVariable Long followingId){
 
         Long currentUserId = jwtUtil.getUserId(httpRequest);
+
         followService.unfollowUser(currentUserId, followingId);
 
         return ResponseEntity.status(HttpStatus.OK).build();

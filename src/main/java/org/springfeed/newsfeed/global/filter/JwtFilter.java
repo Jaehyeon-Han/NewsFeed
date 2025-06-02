@@ -19,26 +19,28 @@ public class JwtFilter implements Filter {
     private static final int UNAUTHORIZED_HTTP_STATUS_CODE = 401;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request,
+        ServletResponse response,
+        FilterChain chain
+    ) throws IOException, ServletException {
+
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String requestUri = httpRequest.getRequestURI();
         String requestMethod = httpRequest.getMethod();
-        if(isWhiteList(requestUri) || ("GET".equals(requestMethod) && requestUri.matches("^/posts/\\d+$"))) {
+        if (isWhiteList(requestUri) || ("GET".equals(requestMethod) && requestUri.matches("^/posts/\\d+$"))) {
             chain.doFilter(request, response);
             return;
         }
 
         String authorizationHeader = httpRequest.getHeader("Authorization");
-
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             error(httpResponse, "로그인이 필요합니다.");
             return;
         }
 
         String jwt = authorizationHeader.substring(7);
-
         if (!jwtUtil.validateToken(jwt)) {
             error(httpResponse, "잘못된 토큰입니다.");
             return;
@@ -52,6 +54,7 @@ public class JwtFilter implements Filter {
     }
 
     private void error(HttpServletResponse httpResponse, String message) throws IOException {
+
         httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         httpResponse.setContentType("application/json");
         httpResponse.setCharacterEncoding("UTF-8");

@@ -7,8 +7,7 @@ import lombok.Getter;
 // 로그인 요청 body에 들어올 정보
 @Getter
 public class LoginRequest {
-
-    // Todo
+    
     @NotBlank(message = "이메일을 입력하세요.")
     @Pattern(regexp = "^[\\w!#$%&'*+/=?`{|}~^.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "이메일 형식이 올바르지 않습니다.")
     private String email;

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class CommentResponse {
+
     private final Long id;
     private final Long postId;
     private final Long authorId;
@@ -14,7 +15,14 @@ public class CommentResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime lastModifiedAt;
 
-    public CommentResponse(Long id, Long postId, Long userId, String nickname, String comment, LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
+    public CommentResponse(Long id,
+        Long postId,
+        Long userId,
+        String nickname,
+        String comment,
+        LocalDateTime createdAt,
+        LocalDateTime lastModifiedAt
+    ) {
         this.id = id;
         this.postId = postId;
         this.authorId = userId;

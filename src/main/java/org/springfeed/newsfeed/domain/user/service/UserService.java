@@ -55,7 +55,9 @@ public class UserService {
 
     // 유저 조회
     public UserResponse getUser(Long userId) {
+
         User user = userRepository.findByIdOrElseThrow(userId);
+
         return new UserResponse(user);
     }
 
@@ -96,6 +98,7 @@ public class UserService {
 
     // 현재 세션의 id와 요청의 id가 동일한지 확인
     private void verifyUserIdentityOrThrow(Long userId, Long currentUser) {
+
         if (!currentUser.equals(userId)) {
             throw new AccessDeniedException("본인이 아닙니다.");
         }

@@ -4,17 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springfeed.newsfeed.domain.entity.Follow;
 import org.springfeed.newsfeed.domain.entity.User;
 import org.springfeed.newsfeed.domain.follow.dto.response.FollowResponse;
+import org.springfeed.newsfeed.domain.follow.dto.response.FollowUserResponse;
 import org.springfeed.newsfeed.domain.follow.dto.response.FollowerListResponse;
 import org.springfeed.newsfeed.domain.follow.dto.response.FollowingListResponse;
 import org.springfeed.newsfeed.domain.follow.repository.FollowRepository;
-import org.springfeed.newsfeed.domain.follow.dto.response.FollowUserResponse;
 import org.springfeed.newsfeed.domain.user.repository.UserRepository;
 import org.springfeed.newsfeed.global.error.exception.AlreadyFollowedException;
 import org.springfeed.newsfeed.global.error.exception.SelfFollowException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

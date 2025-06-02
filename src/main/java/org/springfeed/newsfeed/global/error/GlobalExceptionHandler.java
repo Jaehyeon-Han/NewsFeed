@@ -33,66 +33,77 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleUnauthorized(AccessDeniedException ex) {
+
         return new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(AlreadyFollowedException.class)
     public ErrorResponse handleAlreadyFollowed(AlreadyFollowedException ex) {
+
         return new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(DuplicateUserException.class)
     public ErrorResponse handleDuplicateUser(DuplicateUserException ex) {
+
         return new ErrorResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(FollowNotFoundException.class)
     public ErrorResponse handleFollowNotFound(FollowNotFoundException ex) {
+
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(PasswordCheckFailException.class)
     public ErrorResponse handlePasswordCheckFail(PasswordCheckFailException ex) {
+
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(PasswordMismatchException.class)
     public ErrorResponse handlePasswordMismatch(PasswordMismatchException ex) {
+
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(PasswordUnchangedException.class)
     public ErrorResponse handlePasswordUnchanged(PasswordUnchangedException ex) {
+
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(PostNotFoundException.class)
     public ErrorResponse handlePostNotFound(PostNotFoundException ex) {
+
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(SelfFollowException.class)
     public ErrorResponse handleSelfFollow(SelfFollowException ex) {
+
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UserNotFoundException.class)
     public ErrorResponse handleUserNotFound(UserNotFoundException ex) {
+
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(CommentNotFoundException.class)
     public ErrorResponse handleCommentNotFound(CommentNotFoundException ex) {
+        
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
     }
 }

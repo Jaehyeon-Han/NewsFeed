@@ -1,6 +1,5 @@
 package org.springfeed.newsfeed.domain.comment.controller;
 
-
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springfeed.newsfeed.domain.comment.dto.request.CommentRequest;
@@ -22,12 +21,16 @@ public class CommentController {
 
     //댓글 생성
     @PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<CommentResponse> create(@PathVariable Long postId,
-                                                  @RequestBody CommentRequest request,
-                                                  HttpServletRequest httpRequest) {
+    public ResponseEntity<CommentResponse> create(
+        @PathVariable Long postId,
+        @RequestBody CommentRequest request,
+        HttpServletRequest httpRequest
+    ) {
 
         Long currentId = jwtUtil.getUserId(httpRequest);
+
         CommentResponse comment = commentService.create(currentId, postId, request.getComment());
+
         return ResponseEntity.status(HttpStatus.OK).body(comment);
     }
 
@@ -36,17 +39,22 @@ public class CommentController {
     public ResponseEntity<List<CommentResponse>> findById(@PathVariable Long postId) {
 
         List<CommentResponse> comment = commentService.findById(postId);
+
         return ResponseEntity.status(HttpStatus.OK).body(comment);
     }
 
     //댓글 수정
     @PatchMapping("/comments/{id}")
-    public ResponseEntity<CommentResponse> updateById(@PathVariable Long id,
-                                                      @RequestBody CommentRequest request,
-                                                      HttpServletRequest httpRequest) {
+    public ResponseEntity<CommentResponse> updateById(
+        @PathVariable Long id,
+        @RequestBody CommentRequest request,
+        HttpServletRequest httpRequest
+    ) {
 
         Long currentId = jwtUtil.getUserId(httpRequest);
+
         CommentResponse comment = commentService.updateById(id, currentId, request.getComment());
+
         return ResponseEntity.status(HttpStatus.OK).body(comment);
     }
 
@@ -55,7 +63,10 @@ public class CommentController {
     public ResponseEntity<Void> deleteById(@PathVariable Long id, HttpServletRequest httpRequest) {
 
         Long currentId = jwtUtil.getUserId(httpRequest);
+
         commentService.delete(id, currentId);
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
 }

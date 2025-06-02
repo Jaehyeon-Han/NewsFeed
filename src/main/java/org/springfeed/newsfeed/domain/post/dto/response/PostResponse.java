@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class PostResponse {
-    // Todo
 
     private final Long postId;
     private final String title;
@@ -19,7 +18,14 @@ public class PostResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime lastModifiedAt;
 
-    public PostResponse(Long id, String title, String content, Long authorId, String author, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public PostResponse(Long id,
+        String title,
+        String content,
+        Long authorId,
+        String author,
+        LocalDateTime createdAt,
+        LocalDateTime modifiedAt
+    ) {
         this.postId = id;
         this.title = title;
         this.content = content;
