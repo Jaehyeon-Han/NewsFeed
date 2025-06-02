@@ -29,69 +29,57 @@ public class CommentService {
         Post post = postRepository.findPostByIdOrElseThrow(postId);
         User user = userRepository.findByIdOrElseThrow(userId);
 
-        Comment createComment = new Comment(post, user, comment);
-        commentRepository.save(createComment);
+        Comment newComment = new Comment(post, user, comment);
+        commentRepository.save(newComment);
 
-        return new CommentResponse(createComment.getId(),
-            createComment.getPost().getId(),
-            createComment.getAuthor().getId(),
-            createComment.getAuthor().getNickname(),
-            createComment.getComment(),
-            createComment.getCreatedAt(),
-            createComment.getLastModifiedAt());
+        return new CommentResponse(newComment);
     }
 
     // 댓글 조회
-    public List<CommentResponse> findById(Long postId) {
+    public List<CommentResponse> getAllInPost(Long postId) {
 
         postRepository.findPostByIdOrElseThrow(postId);
 
-        List<Comment> comments = commentRepository.findAllByPost_Id(postId).orElse(List.of());
+        List<Comment> comments = commentRepository.findAllByPostId(postId).orElse(List.of());
 
-        return comments.stream().map(comment -> new CommentResponse(comment.getId(),
-            comment.getPost().getId(),
-            comment.getAuthor().getId(),
-            comment.getAuthor().getNickname(),
-            comment.getComment(),
-            comment.getCreatedAt(),
-            comment.getLastModifiedAt())).toList();
+        return comments.stream()
+            .map(CommentResponse::new)
+            .toList();
     }
 
     // 댓글 수정
     @Transactional
     public CommentResponse updateById(Long id, Long userId, String comment) {
 
-        Comment findComment = findAndCheckComment(id, userId);
+        Comment foundComment = findAndCheckAuthorization(id, userId);
 
-        findComment.setComment(comment);
+        foundComment.setComment(comment);
 
-        return new CommentResponse(findComment.getId(),
-            findComment.getPost().getId(),
-            findComment.getAuthor().getId(),
-            findComment.getAuthor().getNickname(),
-            findComment.getComment(),
-            findComment.getCreatedAt(),
-            findComment.getLastModifiedAt());
+        return new CommentResponse(foundComment);
     }
 
     // 댓글 삭제
     @Transactional
     public void delete(Long id, Long userId) {
 
-        Comment Comment = findAndCheckComment(id, userId);
+        Comment Comment = findAndCheckAuthorization(id, userId);
 
         commentRepository.delete(Comment);
     }
 
     // 댓글, 권한 확인
-    private Comment findAndCheckComment(Long id, Long userId) {
+    private Comment findAndCheckAuthorization(Long id, Long userId) {
 
-        Comment findComment = commentRepository.findByIdOrElseThrow(id);
+        Comment foundComment = commentRepository.findByIdOrElseThrow(id);
 
-        if (!(findComment.getAuthor().getId().equals(userId) || findComment.getPost().getAuthor().getId().equals(userId))) {
+        boolean isCommentAuthor = foundComment.getAuthor().getId().equals(userId);
+        boolean isPostAuthor = foundComment.getPost().getAuthor().getId().equals(userId);
+
+        if (!(isCommentAuthor || isPostAuthor)) {
             throw new AccessDeniedException();
         }
-        return findComment;
+
+        return foundComment;
     }
 
 }

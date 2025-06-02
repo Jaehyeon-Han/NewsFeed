@@ -1,6 +1,9 @@
 package org.springfeed.newsfeed.domain.comment.dto.response;
 
 import lombok.Getter;
+import org.springfeed.newsfeed.domain.entity.Comment;
+import org.springfeed.newsfeed.domain.entity.Post;
+import org.springfeed.newsfeed.domain.entity.User;
 
 import java.time.LocalDateTime;
 
@@ -15,20 +18,16 @@ public class CommentResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime lastModifiedAt;
 
-    public CommentResponse(Long id,
-        Long postId,
-        Long userId,
-        String nickname,
-        String comment,
-        LocalDateTime createdAt,
-        LocalDateTime lastModifiedAt
-    ) {
-        this.id = id;
-        this.postId = postId;
-        this.authorId = userId;
-        this.author = nickname;
-        this.comment = comment;
-        this.createdAt = createdAt;
-        this.lastModifiedAt = lastModifiedAt;
+    public CommentResponse(Comment comment) {
+        User author = comment.getAuthor();
+        Post post = comment.getPost();
+
+        this.id = comment.getId();
+        this.postId = post.getId();
+        this.authorId = author.getId();
+        this.author = author.getNickname();
+        this.comment = comment.getComment();
+        this.createdAt = comment.getCreatedAt();
+        this.lastModifiedAt = comment.getLastModifiedAt();
     }
 }

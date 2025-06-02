@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    Optional<List<Comment>> findAllByPost_Id(Long postId);
+    Optional<List<Comment>> findAllByPostId(Long postId);
 
     default Comment findByIdOrElseThrow(Long id) {
         return findById(id).orElseThrow(CommentNotFoundException::new);

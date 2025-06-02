@@ -36,11 +36,11 @@ public class CommentController {
 
     //게시글에 있는 댓글 목록 조회
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<List<CommentResponse>> findById(@PathVariable Long postId) {
+    public ResponseEntity<List<CommentResponse>> getAllInPost(@PathVariable Long postId) {
 
-        List<CommentResponse> comment = commentService.findById(postId);
+        List<CommentResponse> commentList = commentService.getAllInPost(postId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(comment);
+        return ResponseEntity.status(HttpStatus.OK).body(commentList);
     }
 
     //댓글 수정
