@@ -52,9 +52,8 @@ public class FollowService {
         */
         userRepository.findByIdOrElseThrow(userId);
 
-        List<Follow> followList = followRepository.findByFollowerId(userId);
+        List<Follow> followList = followRepository.findByFollowerIdWithFollowing(userId);
 
-        // Fixme: N+1 문제 해결
         List<FollowUserResponse> followingUserResponseList = followList.stream()
             .map(Follow::getFollowing) // 팔로우 중인 사용자
             .map(FollowUserResponse::new)
@@ -73,9 +72,8 @@ public class FollowService {
          */
         userRepository.findByIdOrElseThrow(userId);
 
-        List<Follow> followList = followRepository.findByFollowingId(userId);
+        List<Follow> followList = followRepository.findByFollowingWithFollower(userId);
 
-        // Fixme: N+1 문제 해결
         List<FollowUserResponse> followerUserResponseList = followList.stream()
             .map(Follow::getFollower)
             .map(FollowUserResponse::new)
