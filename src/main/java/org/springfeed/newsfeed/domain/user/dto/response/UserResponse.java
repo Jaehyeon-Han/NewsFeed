@@ -8,9 +8,9 @@ import org.springfeed.newsfeed.domain.entity.User;
 @Getter
 public class UserResponse {
 
-    private String email;
-    private String nickname;
-    private String introduction;
+    private final String email;
+    private final String nickname;
+    private final String introduction;
 
     public UserResponse(User user) {
         this.email = user.getEmail();
