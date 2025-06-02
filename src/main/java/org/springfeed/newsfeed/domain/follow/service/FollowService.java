@@ -19,6 +19,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FollowService {
+
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
 
@@ -32,7 +33,7 @@ public class FollowService {
             throw new SelfFollowException();
         }
 
-        if (followRepository.existsByFollowerIdAndFollowingId(currentUserId, followingId)){
+        if (followRepository.existsByFollowerIdAndFollowingId(currentUserId, followingId)) {
             throw new AlreadyFollowedException();
         }
 
@@ -43,12 +44,12 @@ public class FollowService {
     }
 
     // 해당 사용자가 팔로우하는 사용자 목록을 반환한다.
-    public FollowingListResponse getFollowings(Long userId) {
+    public FollowingListResponse getFollowingList(Long userId) {
         /*
-        * 사용자가 실제로 존재하는지 확인해야 한다.
-        * 없는 사용자에 대해 빈 배열을 반환한다면 해당 사용자가 존재하는데 다른 사람을 팔로우 하지 않는 건지
-        * 사용자가 없어서 빈 배열을 반환하는 건지 구별할 수 없다.
-        */
+         * 사용자가 실제로 존재하는지 확인해야 한다.
+         * 없는 사용자에 대해 빈 배열을 반환한다면 해당 사용자가 존재하는데 다른 사람을 팔로우 하지 않는 건지
+         * 사용자가 없어서 빈 배열을 반환하는 건지 구별할 수 없다.
+         */
         userRepository.findByIdOrElseThrow(userId);
 
         List<Follow> followList = followRepository.findByFollowerIdWithFollowing(userId);
@@ -62,7 +63,7 @@ public class FollowService {
     }
 
     // 해당 사용자를 팔로우하는 사용자 목록을 반환한다.
-    public FollowerListResponse getFollowers(Long userId) {
+    public FollowerListResponse getFollowerList(Long userId) {
         /*
          * 사용자가 실제로 존재하는지 확인해야 한다.
          * 없는 사용자에 대해 빈 배열을 반환한다면 해당 사용자가 존재하는데

@@ -17,14 +17,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/follows")
 @RequiredArgsConstructor
 public class FollowController {
+
     private final FollowService followService;
     private final JwtUtil jwtUtil;
 
     @PostMapping
     public ResponseEntity<FollowResponse> followUser(HttpServletRequest httpRequest,
-                                                     @RequestBody @Valid FollowRequest followRequest){
+        @RequestBody @Valid FollowRequest followRequest
+    ) {
 
         Long currentUserId = jwtUtil.getUserId(httpRequest);
+
         FollowResponse followResponse = followService.followUser(currentUserId, followRequest.getFollowingId());
 
         return ResponseEntity.status(HttpStatus.OK).body(followResponse);
@@ -32,25 +35,26 @@ public class FollowController {
 
     // 해당 사용자가 팔로우하는 사용자 목록을 반환한다.
     @GetMapping("/followings/users/{userId}")
-    public ResponseEntity<FollowingListResponse> getFollowings(@PathVariable Long userId){
+    public ResponseEntity<FollowingListResponse> getFollowingList(@PathVariable Long userId) {
 
-        FollowingListResponse followings = followService.getFollowings(userId);
+        FollowingListResponse followingList = followService.getFollowingList(userId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(followings);
+        return ResponseEntity.status(HttpStatus.OK).body(followingList);
     }
 
     // 해당 사용자를 팔로우하는 사용자 목록을 반환한다.
     @GetMapping("/followers/users/{userId}")
-    public ResponseEntity<FollowerListResponse> getFollowers(@PathVariable Long userId){
+    public ResponseEntity<FollowerListResponse> getFollowerList(@PathVariable Long userId) {
 
-        FollowerListResponse Followers = followService.getFollowers(userId);
+        FollowerListResponse followerList = followService.getFollowerList(userId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(Followers);
+        return ResponseEntity.status(HttpStatus.OK).body(followerList);
     }
 
     @DeleteMapping("/{followingId}")
     public ResponseEntity<Void> unfollowUser(HttpServletRequest httpRequest,
-                                             @PathVariable Long followingId){
+        @PathVariable Long followingId
+    ) {
 
         Long currentUserId = jwtUtil.getUserId(httpRequest);
 

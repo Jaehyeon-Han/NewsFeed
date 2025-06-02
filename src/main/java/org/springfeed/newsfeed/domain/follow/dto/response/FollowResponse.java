@@ -7,15 +7,16 @@ import java.time.LocalDateTime;
 
 @Getter
 public class FollowResponse {
-    private Long followId;
 
-    private Long followerId; // 팔로우 건 사용자 ID
-    private String followerNickname; // 팔로우 건 사용자 닉네임
+    private final Long followId;
 
-    private Long followingId; // 팔로우 당한 사용자 ID
-    private String followingNickname; // 팔로우 당한 사용자 닉네임
+    private final Long followerId; // 팔로우 건 사용자 ID
+    private final String followerNickname; // 팔로우 건 사용자 닉네임
 
-    private LocalDateTime followedAt; // 팔로우가 생성된 시각
+    private final Long followingId; // 팔로우 당한 사용자 ID
+    private final String followingNickname; // 팔로우 당한 사용자 닉네임
+
+    private final LocalDateTime followedAt; // 팔로우가 생성된 시각
 
     public FollowResponse(Follow follow) {
         this.followId = follow.getId();

@@ -5,6 +5,7 @@ import org.springfeed.newsfeed.domain.entity.User;
 
 @Getter
 public class FollowUserResponse {
+
     private final Long id;
     private final String nickname;
     private final String introduction;
