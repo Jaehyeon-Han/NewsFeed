@@ -31,30 +31,13 @@ public class PostService {
 
         Post createdPost = postRepository.save(post);
 
-        return new PostResponse(
-            createdPost.getId(),
-            createdPost.getTitle(),
-            createdPost.getContents(),
-            foundUser.getId(),
-            foundUser.getNickname(),
-            createdPost.getCreatedAt(),
-            createdPost.getLastModifiedAt()
-        );
+        return new PostResponse(createdPost);
     }
 
     public PostResponse findById(long id) {
         Post foundPost = postRepository.findPostByIdOrElseThrow(id);
-        User author = foundPost.getAuthor();
 
-        return new PostResponse(
-            foundPost.getId(),
-            foundPost.getTitle(),
-            foundPost.getContents(),
-            author.getId(),
-            author.getNickname(),
-            foundPost.getCreatedAt(),
-            foundPost.getLastModifiedAt()
-        );
+        return new PostResponse(foundPost);
     }
 
     @Transactional
@@ -65,7 +48,7 @@ public class PostService {
         verifyAuthorOrThrow(userId, author);
 
         foundPost.setTitle(title);
-        foundPost.setContents(content);
+        foundPost.setContent(content);
 
         /*
             1. UPDATE 쿼리가 DB에 실행됨
@@ -75,15 +58,7 @@ public class PostService {
          */
         postRepository.flush();
 
-        return new PostResponse(
-            foundPost.getId(),
-            foundPost.getTitle(),
-            foundPost.getContents(),
-            author.getId(),
-            author.getNickname(),
-            foundPost.getCreatedAt(),
-            foundPost.getLastModifiedAt()
-        );
+        return new PostResponse(foundPost);
     }
 
     public void deleteById(long postId, long userId) {
@@ -105,43 +80,26 @@ public class PostService {
 
             Page<Post> postPage = postRepository.findAllByCreatedAtBetween(startDateTime, endDateTime, pageable);
 
-            return postPage.map(this::convertToResponse);
+            return postPage.map(PostResponse::new);
         } else {
             Page<Post> postPage = postRepository.findAll(pageable);
 
-            return postPage.map(this::convertToResponse);
+            return postPage.map(PostResponse::new);
         }
-    }
-
-    // Post를 PostResponse로 변환
-    private PostResponse convertToResponse(Post post) {
-
-        return PostResponse.builder()
-            .postId(post.getId())
-            .title(post.getTitle())
-            .content(post.getContents())
-            .authorId(post.getAuthor().getId())
-            .author(post.getAuthor().getNickname())
-            .createdAt(post.getCreatedAt())
-            .lastModifiedAt(post.getLastModifiedAt())
-            .build();
     }
 
     public Page<PostResponse> getPostFollowingPage(Pageable pageable, Long currentId) {
 
         Page<Post> postPage = postRepository.findPostsByFollowings(currentId, pageable);
 
-        return postPage.map(this::convertToResponse);
+        return postPage.map(PostResponse::new);
     }
 
     private void verifyAuthorOrThrow(long userId, User author) {
 
-        if (isNotAuthor(userId, author)) {
+        boolean isNotAuthor = !author.getId().equals(userId);
+        if (isNotAuthor) {
             throw new AccessDeniedException();
         }
-    }
-
-    private boolean isNotAuthor(long userId, User author) {
-        return !author.getId().equals(userId);
     }
 }

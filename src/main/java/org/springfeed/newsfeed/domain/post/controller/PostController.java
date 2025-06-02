@@ -34,14 +34,15 @@ public class PostController {
     // 게시글 작성
     @PostMapping("/new")
     public ResponseEntity<PostResponse> create(
-        @Valid @RequestBody CreatePostRequest createPostRequest,
+        @Valid @RequestBody CreatePostRequest request,
         HttpServletRequest httpRequest
     ) {
 
         Long currentId = jwtUtil.getUserId(httpRequest);
+
         PostResponse postResponse = postService.save(
-            createPostRequest.getTitle(),
-            createPostRequest.getContent(),
+            request.getTitle(),
+            request.getContent(),
             currentId
         );
 
@@ -57,20 +58,19 @@ public class PostController {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
-        int size = 10;
+        final int DEFAULT_PAGE_SIZE = 10;
 
         Pageable pageable = PageRequest.of(
             page - 1,
-            size,
+            DEFAULT_PAGE_SIZE,
             Sort.by(Sort.Direction.fromString(sortDir),
                 sortBy)
         );
 
         Page<PostResponse> postPage = postService.getPostPage(pageable, startDate, endDate);
 
-        // Request에서 받은 페이지값을 그대로 반환해주기 위해 커스텀 페이지 생성.
-        Pageable customPageable = PageRequest.of(page, size, pageable.getSort());
-
+        // Request에서 받은 페이지 번호를 그대로 반환해주기 위해 커스텀 페이지 생성.
+        Pageable customPageable = PageRequest.of(page, DEFAULT_PAGE_SIZE, pageable.getSort());
         Page<PostResponse> customPage = new PageImpl<>(
             postPage.getContent(),
             customPageable,
@@ -80,7 +80,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(customPage);
     }
 
-    // 팔로우 한 사람의 게시글 조회
+    // 팔로우 중인 사용자의 게시글 조회
     @GetMapping("/following")
     public ResponseEntity<Page<PostResponse>> getPostFollowingPage(
         @RequestParam(defaultValue = "1") int page,
@@ -90,6 +90,7 @@ public class PostController {
         HttpServletRequest httpRequest
     ) {
 
+        Long currentUserId = jwtUtil.getUserId(httpRequest);
         Pageable pageable = PageRequest.of(
             page - 1,
             size,
@@ -97,12 +98,10 @@ public class PostController {
                 sortBy)
         );
 
-        Long currentUserId = jwtUtil.getUserId(httpRequest);
         Page<PostResponse> postPage = postService.getPostFollowingPage(pageable, currentUserId);
 
         // Request에서 받은 페이지값을 그대로 반환해주기 위해 커스텀 페이지 생성.
         Pageable customPageable = PageRequest.of(page, size, pageable.getSort());
-
         Page<PostResponse> customPage = new PageImpl<>(
             postPage.getContent(),
             customPageable,
@@ -135,7 +134,8 @@ public class PostController {
             postId,
             currentId,
             request.getTitle(),
-            request.getContent());
+            request.getContent()
+        );
 
         return ResponseEntity.status(HttpStatus.OK).body(postResponse);
     }

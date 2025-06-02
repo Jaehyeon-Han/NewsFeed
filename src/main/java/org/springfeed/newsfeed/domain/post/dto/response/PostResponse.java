@@ -1,13 +1,13 @@
 package org.springfeed.newsfeed.domain.post.dto.response;
 
-import lombok.Builder;
 import lombok.Getter;
+import org.springfeed.newsfeed.domain.entity.Post;
+import org.springfeed.newsfeed.domain.entity.User;
 
 import java.time.LocalDateTime;
 
 // 게시글 응답
 @Getter
-@Builder
 public class PostResponse {
 
     private final Long postId;
@@ -18,21 +18,16 @@ public class PostResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime lastModifiedAt;
 
-    public PostResponse(Long id,
-        String title,
-        String content,
-        Long authorId,
-        String author,
-        LocalDateTime createdAt,
-        LocalDateTime modifiedAt
-    ) {
-        this.postId = id;
-        this.title = title;
-        this.content = content;
-        this.authorId = authorId;
-        this.author = author;
-        this.createdAt = createdAt;
-        this.lastModifiedAt = modifiedAt;
+    public PostResponse(Post post){
+        User author = post.getAuthor();
+
+        this.postId = post.getId();
+        this.title = post.getTitle();
+        this.content = post.getContent();
+        this.authorId = author.getId();
+        this.author = author.getNickname();
+        this.createdAt = post.getCreatedAt();
+        this.lastModifiedAt = post.getLastModifiedAt();
     }
 
 }

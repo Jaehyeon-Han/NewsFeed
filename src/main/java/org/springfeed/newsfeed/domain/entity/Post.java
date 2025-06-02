@@ -29,11 +29,11 @@ public class Post extends BaseEntity {
 
     @Column(nullable = false, length = 500)
     @Setter
-    private String contents;
+    private String content;
 
     public Post(String title, String content) {
         this.title = title;
-        this.contents = content;
+        this.content = content;
     }
 
 
