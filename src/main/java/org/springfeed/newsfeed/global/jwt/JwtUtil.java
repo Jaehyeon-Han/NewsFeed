@@ -17,7 +17,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final long TOKEN_TIME = 30 * 60 * 1000L;
+    private final static long TOKEN_TIME = 30 * 60 * 1000L;
     private final SignatureAlgorithm algorithm = SignatureAlgorithm.HS256;
 
     @Value("${jwt.secret.key}")
@@ -67,15 +67,15 @@ public class JwtUtil {
         return false;
     }
 
-    // jwt에 있는 userId값 반환
+    // JWT에 있는 userId값 반환
     public Long getUserId(HttpServletRequest request) {
 
         String token = request.getHeader("Authorization").substring(7);
-        String subject = Jwts.parserBuilder()
+        String userId = Jwts.parserBuilder()
             .setSigningKey(key)
             .build()
             .parseClaimsJws(token).getBody().getSubject();
 
-        return Long.valueOf(subject);
+        return Long.valueOf(userId);
     }
 }

@@ -26,20 +26,24 @@ public class JwtFilter implements Filter {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-
         String requestUri = httpRequest.getRequestURI();
         String requestMethod = httpRequest.getMethod();
-        if (isWhiteList(requestUri) || ("GET".equals(requestMethod) && requestUri.matches("^/posts/\\d+$"))) {
+        boolean isFindingPost = "GET".equals(requestMethod) && requestUri.matches("^/posts/\\d+$");
+
+        // 정상 요청
+        if (inWhiteList(requestUri) || isFindingPost) {
             chain.doFilter(request, response);
             return;
         }
 
+        // 인증 정보 없음
         String authorizationHeader = httpRequest.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             error(httpResponse, "로그인이 필요합니다.");
             return;
         }
 
+        // 잘못된 토큰
         String jwt = authorizationHeader.substring(7);
         if (!jwtUtil.validateToken(jwt)) {
             error(httpResponse, "잘못된 토큰입니다.");
@@ -49,7 +53,7 @@ public class JwtFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-    private boolean isWhiteList(String requestURI) {
+    private boolean inWhiteList(String requestURI) {
         return PatternMatchUtils.simpleMatch(WHITE_LIST, requestURI);
     }
 

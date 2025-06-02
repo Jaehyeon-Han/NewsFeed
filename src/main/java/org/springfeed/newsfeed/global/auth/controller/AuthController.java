@@ -21,6 +21,7 @@ public class AuthController {
     public ResponseEntity<String> login(@Valid @RequestBody LoginRequest request) {
 
         String jwt = authService.login(request.getEmail(), request.getPassword());
+
         return ResponseEntity.status(HttpStatus.OK).header("Authorization", jwt).body(jwt);
     }
 
