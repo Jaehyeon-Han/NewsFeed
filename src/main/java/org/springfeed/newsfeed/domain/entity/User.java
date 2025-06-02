@@ -2,13 +2,17 @@ package org.springfeed.newsfeed.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "users")
 @Getter
+@NoArgsConstructor
 public class User extends BaseEntity {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false, length = 255)
@@ -31,9 +35,5 @@ public class User extends BaseEntity {
         this.passwordHash = encodePassword;
         this.nickname = nickname;
         this.introduction = introduction;
-    }
-
-    public User() {
-
     }
 }

@@ -2,16 +2,21 @@ package org.springfeed.newsfeed.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Table(name = "follows")
+@EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
 public class Follow {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,11 +38,8 @@ public class Follow {
     )
     private LocalDateTime startedFollowingAt;
 
-    public Follow(){}
-
-    public Follow(User follower, User following){
+    public Follow(User follower, User following) {
         this.follower = follower;
         this.following = following;
-        this.startedFollowingAt = LocalDateTime.now();
     }
 }

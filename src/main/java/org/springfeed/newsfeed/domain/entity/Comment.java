@@ -2,14 +2,17 @@ package org.springfeed.newsfeed.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "comments")
+@NoArgsConstructor
 @Getter
 public class Comment extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,9 +30,6 @@ public class Comment extends BaseEntity {
     @Setter
     @Column(nullable = false, length = 100)
     private String comment;
-
-    public Comment() {
-    }
 
     public Comment(Post post, User user, String comment) {
         this.author = user;
