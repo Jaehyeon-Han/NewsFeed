@@ -84,7 +84,7 @@ public class PostController {
     public ResponseEntity<Page<PostResponse>> getPostFollowingPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @SessionAttribute(name = SessionType.USER) Long currentId,
+            HttpServletRequest httpRequest,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir
     ) {
@@ -96,7 +96,8 @@ public class PostController {
                         sortBy)
         );
 
-        Page<PostResponse> postPage = postService.getPostFollowingPage(pageable, currentId);
+        Long currentUserId = jwtUtil.getUserId(httpRequest);
+        Page<PostResponse> postPage = postService.getPostFollowingPage(pageable, currentUserId);
 
         // Request에서 받은 페이지값을 그대로 반환해주기 위해 커스텀 페이지 생성.
         Pageable customPageable = PageRequest.of(page, size, pageable.getSort());
