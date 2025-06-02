@@ -29,7 +29,7 @@ public class FollowController {
     }
 
     // 해당 사용자가 팔로우하는 사용자 목록을 반환한다.
-    @GetMapping("/followings/{userId}")
+    @GetMapping("/followings/users/{userId}")
     public ResponseEntity<FollowingListResponse> getFollowings(@PathVariable Long userId){
         FollowingListResponse followings = followService.getFollowings(userId);
 
@@ -37,7 +37,7 @@ public class FollowController {
     }
 
     // 해당 사용자를 팔로우하는 사용자 목록을 반환한다.
-    @GetMapping("/followers/{userId}")
+    @GetMapping("/followers/users/{userId}")
     public ResponseEntity<FollowerListResponse> getFollowers(@PathVariable Long userId){
         FollowerListResponse Followers = followService.getFollowers(userId);
 
