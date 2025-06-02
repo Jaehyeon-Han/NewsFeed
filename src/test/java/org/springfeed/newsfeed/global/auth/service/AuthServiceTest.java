@@ -1,5 +1,6 @@
 package org.springfeed.newsfeed.global.auth.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,12 +12,14 @@ import org.springfeed.newsfeed.domain.user.repository.UserRepository;
 import org.springfeed.newsfeed.global.config.PasswordEncoder;
 import org.springfeed.newsfeed.global.error.exception.PasswordMismatchException;
 import org.springfeed.newsfeed.global.error.exception.UserNotFoundException;
+import org.springfeed.newsfeed.global.jwt.JwtUtil;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springfeed.newsfeed.constant.UserConstant.*;
@@ -31,14 +34,15 @@ class AuthServiceTest {
      * 현재는 AuthService가 PasswordEncoder와 강하게 결합
      * 별도의 인터페이스로 정의해야 유지보수성 향상
      */
-
     PasswordEncoder passwordEncoder = new PasswordEncoder();
+
+    JwtUtil jwtUtil = new JwtUtil("kToGgA9M8zVVYqH1+U4LlMgk3E0gUCVOaYStCZzz/So=");
 
     AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(userRepository, passwordEncoder);
+        authService = new AuthService(userRepository, passwordEncoder, jwtUtil);
     }
 
     /*
@@ -61,11 +65,11 @@ class AuthServiceTest {
         given(userRepository.findByEmail(EMAIL)).willReturn(Optional.of(mockUser));
 
         // when
-        Long login = authService.login(EMAIL, PASSWORD);
+        String token = authService.login(EMAIL, PASSWORD);
 
         // then
         then(userRepository).should().findByEmail(EMAIL);
-        assertThat(login).isEqualTo(1); // User 엔티티의 Id는 설정 불가능
+        assertThat(token).isEqualTo(jwtUtil.createToken(1L)); // User 엔티티의 Id는 설정 불가능
     }
 
     @Test

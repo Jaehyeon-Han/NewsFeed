@@ -22,6 +22,12 @@ public class JwtUtil {
     private String secretKey;
     private Key key;
 
+    public JwtUtil(@Value("${jwt.secret.key}") String secretKey) {
+        this.secretKey = secretKey;
+        byte[] bytes = Base64.getDecoder().decode(secretKey);
+        key = Keys.hmacShaKeyFor(bytes);
+    }
+
     // 토큰 초기화
     @PostConstruct
     public void init() {

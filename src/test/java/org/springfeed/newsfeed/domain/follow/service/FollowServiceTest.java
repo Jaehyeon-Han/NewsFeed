@@ -106,7 +106,7 @@ class FollowServiceTest {
     void should_returnEmptyList_when_loginUserFollowingNoOne() {
         User loginUser = getUserWithId(LOGIN_USER_ID);
         given(userRepository.findByIdOrElseThrow(LOGIN_USER_ID)).willReturn(loginUser);
-        given(followRepository.findByFollowerId(LOGIN_USER_ID)).willReturn(List.of());
+        given(followRepository.findByFollowerIdWithFollowing(LOGIN_USER_ID)).willReturn(List.of());
 
         FollowingListResponse followings = followService.getFollowings(LOGIN_USER_ID);
 
@@ -123,7 +123,7 @@ class FollowServiceTest {
 
         Follow follow1 = new Follow(loginUser, anotherUser);
         Follow follow2 = new Follow(loginUser, otherUser);
-        given(followRepository.findByFollowerId(LOGIN_USER_ID)).willReturn(List.of(follow1, follow2));
+        given(followRepository.findByFollowerIdWithFollowing(LOGIN_USER_ID)).willReturn(List.of(follow1, follow2));
 
         FollowingListResponse followings = followService.getFollowings(LOGIN_USER_ID);
 
@@ -138,7 +138,7 @@ class FollowServiceTest {
     void should_returnEmptyList_when_loginUserFollowedByNoOne() {
         User loginUser = getUserWithId(LOGIN_USER_ID);
         given(userRepository.findByIdOrElseThrow(LOGIN_USER_ID)).willReturn(loginUser);
-        given(followRepository.findByFollowingId(LOGIN_USER_ID)).willReturn(List.of());
+        given(followRepository.findByFollowingWithFollower(LOGIN_USER_ID)).willReturn(List.of());
 
         FollowerListResponse followers = followService.getFollowers(LOGIN_USER_ID);
 
@@ -155,7 +155,7 @@ class FollowServiceTest {
 
         Follow follow1 = new Follow(anotherUser, loginUser);
         Follow follow2 = new Follow(otherUser, loginUser);
-        given(followRepository.findByFollowingId(LOGIN_USER_ID)).willReturn(List.of(follow1, follow2));
+        given(followRepository.findByFollowingWithFollower(LOGIN_USER_ID)).willReturn(List.of(follow1, follow2));
 
         FollowerListResponse followers = followService.getFollowers(LOGIN_USER_ID);
 
