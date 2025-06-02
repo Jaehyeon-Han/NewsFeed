@@ -6,6 +6,7 @@ import org.springfeed.newsfeed.domain.user.repository.UserRepository;
 import org.springfeed.newsfeed.global.config.PasswordEncoder;
 import org.springfeed.newsfeed.global.error.exception.PasswordMismatchException;
 import org.springfeed.newsfeed.global.error.exception.UserNotFoundException;
+import org.springfeed.newsfeed.global.jwt.JwtUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,8 +17,9 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public Long login(String email, String password) {
+    public String login(String email, String password) {
 
         Optional<User> findUser = userRepository.findByEmail(email);
         if(findUser.isEmpty()) {
@@ -30,6 +32,6 @@ public class AuthService {
             throw new PasswordMismatchException();
         }
 
-        return user.getId();
+        return jwtUtil.createToken(user.getId());
     }
 }
