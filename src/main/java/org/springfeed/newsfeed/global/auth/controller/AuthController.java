@@ -1,9 +1,11 @@
 package org.springfeed.newsfeed.global.auth.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springfeed.newsfeed.global.auth.dto.request.LoginRequest;
 import org.springfeed.newsfeed.global.auth.service.AuthService;
+import org.springfeed.newsfeed.global.jwt.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtUtil jwtUtil;
 
     // 로그인 구현
     @PostMapping("/login")
@@ -25,4 +28,13 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).header("Authorization", jwt).body(jwt);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest httpRequest) {
+
+        String token = jwtUtil.getToken(httpRequest);
+
+        jwtUtil.invalidateToken(token);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }

@@ -86,10 +86,11 @@ public class UserController {
         @Valid @RequestBody DeleteAccountRequest request,
         HttpServletRequest httpRequest
     ) {
-
         Long currentId = jwtUtil.getUserId(httpRequest);
+        String token = jwtUtil.getToken(httpRequest);
 
         userService.delete(userId, request.getPassword(), currentId);
+        jwtUtil.invalidateToken(token);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

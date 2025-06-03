@@ -5,7 +5,9 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springfeed.newsfeed.global.jwt.blacklist.BlacklistManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,10 +17,13 @@ import java.util.Date;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
 
-    private final static long TOKEN_TIME = 30 * 60 * 1000L;
-    private final SignatureAlgorithm algorithm = SignatureAlgorithm.HS256;
+    private final static long TOKEN_TIME = 30 * 60 * 1000L; // 30분?
+    private final static SignatureAlgorithm ALGORITHM = SignatureAlgorithm.HS256;
+
+    private final BlacklistManager blacklistManager;
 
     @Value("${jwt.secret.key}")
     private String secretKey;
@@ -41,7 +46,7 @@ public class JwtUtil {
             .setSubject(userId.toString())
             .setExpiration(new Date(date.getTime() + TOKEN_TIME))
             .setIssuedAt(date)
-            .signWith(key, algorithm)
+            .signWith(key, ALGORITHM)
             .compact();
     }
 
@@ -49,10 +54,7 @@ public class JwtUtil {
     public boolean validateToken(String token) {
 
         try {
-            Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token);
+            parseClaims(token);
             return true;
         } catch (ExpiredJwtException e) {       // 토큰이 만료된 경우
             log.error("만료된 토큰입니다.", e);
@@ -71,11 +73,41 @@ public class JwtUtil {
     public Long getUserId(HttpServletRequest request) {
 
         String token = request.getHeader("Authorization").substring(7);
-        String userId = Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token).getBody().getSubject();
+        String userId = parseClaims(token).getSubject();
 
         return Long.valueOf(userId);
+    }
+
+    public String getToken(HttpServletRequest request) {
+        return request.getHeader("Authorization").substring(7);
+    }
+
+    public void invalidateToken(String token) {
+        blacklistManager.add(token, getTokenRemainingTimeInSecond(token));
+    }
+
+    public boolean isInBlacklist(String token) {
+        return blacklistManager.contains(token);
+    }
+
+    private long getTokenRemainingTimeInSecond(String token) {
+        validateToken(token);
+
+        Claims claims = parseClaims(token);
+        Date expiration = claims.getExpiration();
+        Date now = new Date();
+
+        long diffMillis = expiration.getTime() - now.getTime();
+        long diffSeconds = diffMillis / 1000;
+
+        return diffSeconds;
+    }
+
+    private Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
+            .setSigningKey(key)           // 서명 검증을 위한 키
+            .build()
+            .parseClaimsJws(token)        // 유효성 검사 및 파싱
+            .getBody();
     }
 }

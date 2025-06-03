@@ -26,3 +26,5 @@ spring:
 jwt:
   secret:
     key: dlrjtdmstnarutjwkrtjdgodiehlsmseprnlcksgdktjdurlekwkrtjdgkqslek
+
+BlacklistSize: 999
