@@ -40,7 +40,11 @@ public class UserController {
 
         Long currentId = jwtUtil.getUserId(httpRequest);
 
-        UserResponse response = userService.updateUser(userId, request, currentId);
+        UserResponse response = userService.updateUser(userId,
+            request.getNickname(),
+            request.getIntroduction(),
+            currentId
+        );
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -55,7 +59,7 @@ public class UserController {
 
         Long currentId = jwtUtil.getUserId(httpRequest);
 
-        userService.updatePassword(userId, request, currentId);
+        userService.updatePassword(userId, request.getCurrentPassword(), request.getNewPassword(), currentId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
