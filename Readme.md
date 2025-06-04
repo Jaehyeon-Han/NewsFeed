@@ -1,28 +1,62 @@
-# 개발 환경 세팅 가이드
+# 뉴스피드 프로젝트
+NewsFeed는 회원가입, 로그인, 게시글 및 댓글 기능을 제공하는 REST API기반 프로젝트입니다.
+JWT와 로그인 필터를 통해 보안성을 강화하고, 팔로우 및 피드 간 사용자 연결 기능을 구현했습니다.
 
-## Git Clone 및 Checkout
 
-프로젝트 넣을 폴더에서 우클릭 → Open Git Bash Here
+---
 
-```bash
-git clone https://github.com/Jaehyeon-Han/NewsFeed.git
-cd NewsFeed/
-git branch -r
-git switch -c feat/브랜치명 origin/feat/브랜치명
-```
 
-## 데이터베이스 연결
+## 기술스택
+- Java 17
+- Spring Boot 3.4.6
+- Spring Data JPA
+- MySQL
+- Gradle 8.14(wrapper)
 
-- MySQL 접속하여 데이터베이스 생성 (기존 DB도 사용 가능)
-- 실행: 구성 → 편집 → 빌드 및 실행 옵션 수정 → 환경 변수에 `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD` 입력 후 실행
+## 주요 기능
 
-    ```yaml
-    # MySQL DataSource 설정
-    datasource:
-      url: jdbc:mysql://localhost:3306/${DB_NAME}
-      username: ${DB_USERNAME}
-      password: ${DB_PASSWORD}
-      driver-class-name: com.mysql.cj.jdbc.Driver
-    ```
-    
-- `ddl-auto` 설정은 `create-drop`
+- User CRUD
+  - 회원가입
+  - 로그인
+  - 회원 정보 조회, 수정, 탈퇴
+  - 비밀번호 변경
+- Post CRUD
+  - 전체 및 단일 게시글 조회
+  - 게시글 작성, 수정, 삭제
+- Comment
+  - 댓글 작성
+  - 댓글 조회
+  - 댓글 수정, 삭제
+- Follow
+  - 팔로우 요청
+  - 언팔로우
+  - 팔로잉 목록
+  - 팔로워 목록
+
+## API 명세표
+
+| 기능        | 메소드    | URL                                  | 요청값                                                                                                                                                                       | 응답값                                                                                                                                                                                                                             | 비고                                                                                                  |
+|-----------|--------|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| 회원가입      | POST   | `/signup`                            | body: <br> {<br> "email": "user@email.com", "password": "password",<br>"passwordCheck": "password",<br>"nickname": "First User",<br>"introduction": "I am an user." <br>} | 200 OK                                                                                                                                                                                                                          | 필수 요청 필드:<br>- email(String)<br>- password(String)<br>- passwordCheck(String)<br>- nickname(String) |
+| 회원탈퇴      | POST   | `/users/{userId}/delete`             | body: <br>{<br> "password": "password" <br>}                                                                                                                              | 200 (Users 테이블에서 삭제되므로 Service에서 UserNotFound 예외로 필터)                                                                                                                                                                           | 필수 요청 필드:<br>- password(String)                                                                     |
+| 로그인       | POST   | `/login`                             | body: <br>{<br> "email": "user@email.com",<br>"password": "password" <br>}                                                                                                | 200,<br>헤더: Authorization: JWT 토큰<br><br>응답 body:<br>JWT 토큰                                                                                                                                                                     | 필수 요청 필드:<br>- email(String)<br>- password(String)                                                  |
+| 회원 정보 수정  | PUT    | `/users/{userId}`                    | body: <br>{<br> "nickname": "Another User",<br>"introduction": "I am another user." <br>}                                                                                 | 200 OK, <br>body: <br>{<br>"email": "user@email.com",<br>"nickname": "Another User",<br>"introduction": "I am another user." <br>}                                                                                              | 필수 요청 필드:<br>- nickname(String)<br>- introduction(String)                                           |
+| 회원 정보 조회  | GET    | `/users/{userId}`                    |                                                                                                                                                                           | 200 OK, <br>body: <br>{ <br>"email": "user@email.com",<br>"nickname": "User",<br>"introduction": "I am an user." <br>}                                                                                                          |                                                                                                     |
+| 비밀번호 수정   | PATCH  | `/users/{userId}/password`           | body: <br>{<br> "currentPassword": "password",<br>"newPassword": "newPassword" <br>}                                                                                      | 200 OK                                                                                                                                                                                                                          |                                                                                                     |
+| 전체 게시글 조회 | GET    | `/posts`                             | 쿼리 매개변수 (타입, 기본값)<br>- page(integer, 1)<br>- sortBy(string, “createdAt”)<br>- sortDir(string, “desc”)<br>- startDate(string)<br>- endDate(string)                         | 200 OK, 페이지 정보                                                                                                                                                                                                                  | size = 10 고정                                                                                        |
+| 게시글 단건 조회 | GET    | `/posts/{postId}`                    |                                                                                                                                                                           | 200 OK, <br>body: <br>{ <br>"postId": 1,<br>"title": "title",<br>"content": "content",<br>"authorId": 1,<br>"author": "user",<br>"createdAt": "...",<br>"lastModifiedAt": "..." <br>}`                                          |                                                                                                     |
+| 게시글 작성    | POST   | `/posts/new`                         | body: <br>{<br> "title": "title",<br>"content": "content" <br>}                                                                                                           | 200 OK, <br>작성된 게시글 정보                                                                                                                                                                                                          | 필수 요청 필드:<br>- (String)<br>- content(String)                                                        |
+| 게시글 수정    | PUT    | `/posts/{postId}`                    | body: <br>{<br> "title": "newTitle",<br>"content": "newContent" <br>}                                                                                                     | 200 OK, <br>수정된 게시글 정보                                                                                                                                                                                                          | 필수 요청 필드:<br>- title(string)<br>- content(String) <br> 작성자 본인만 게시글 수정 가능 (JWT 인증)                   |
+| 게시글 삭제    | DELETE | `/posts/{postId}`                    |                                                                                                                                                                           | 200 OK                                                                                                                                                                                                                          | 작성자 본인만 게시글 삭제 가능 (JWT 인증)                                                                          |
+| 팔로우       | POST   | `/follows`                           | body:<br>{<br> "followingId": 2 <br>}                                                                                                                                     | 200 OK, <br>body: follow 정보                                                                                                                                                                                                     | 필수 요청 필드:<br>- followingId(Integer)                                                                 |
+| 팔로잉 목록 조회 | GET    | `/follows/followings/users/{userId}` | 경로: userId(Integer)                                                                                                                                                       | 200 OK, <br>body:<br>{<br>”totalFollowingCount”: 1,<br>”followings”: [<br> “id”: 2,<br>“nickname”: “Another User”,<br>“introduction”: “I am another user”} ]<br>}                                                               |                                                                                                     |
+| 팔로워 목록 조회 | GET    | `/follows/followers/{userId}`        | 경로: userId(Integer)                                                                                                                                                       | 200 OK, <br>body:{<br>”totalFollowerCount”: 1,<br>”followers”: [ <br>{“id”: 1,<br>“nickname”: “User”,<br>“introduction”:   “I am an user”  } ]<br>}                                                                             |                                                                                                     |
+| 언팔로우      | DELETE | `/follows/{followingId}`             | 경로: followingId(Integer)                                                                                                                                                  | 200 OK                                                                                                                                                                                                                          |                                                                                                     |
+| 댓글 작성     | POST   | `/posts/{postId}/comments`           | 경로: postId{Integer}<br>body:<br>{<br> "comment": "comment" <br>}                                                                                                          | 200 OK, <br>작성된 댓글 정보                                                                                                                                                                                                           | 필수 요청 필드:<br>- comment(String)                                                                      |
+| 댓글 목록 조회  | GET    | `/posts/{postId}/comments`           | 경로 : postId(Integer)                                                                                                                                                      | 200 OK, <br>body:<br>{<br>"id": 6,<br>"postId": 1,<br>"authorId": 2,<br>"author": "First User",<br>"comment": "comment",<br>"createdAt": "2025-05-29T18:55:32.0924717",<br>"lastModifiedAt": "2025-05-29T18:55:32.0924717"<br>} |                                                                                                     |
+| 댓글 수정     | PATCH  | `/comments/{id}`                     | 경로 : id(Integer)<br>body:<br>{<br> "comment": "comment" <br>}                                                                                                             | 200 OK, <br>수정된 댓글 정보                                                                                                                                                                                                           | 필수 요청 필드:<br>- comment(String) <br> 작성자 본인만 댓글 수정 가능 (JWT 인증)                                       |
+| 댓글 삭제     | DELETE | `/comments/{id}`                     | 경로 : id(Integer)<br>                                                                                                                                                      | 200 OK                                                                                                                                                                                                                          | 작성자 본인만 댓글 삭제 가능 (JWT 인증)                                                                           |
+
+
+## ERD
+[ERD 링크](https://www.erdcloud.com/d/YCAoiwcS3jez4CipR)
