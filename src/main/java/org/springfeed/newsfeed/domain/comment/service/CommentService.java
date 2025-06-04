@@ -40,7 +40,7 @@ public class CommentService {
 
         postRepository.findPostByIdOrElseThrow(postId);
 
-        List<Comment> comments = commentRepository.findAllByPostId(postId).orElse(List.of());
+        List<Comment> comments = commentRepository.findAllByPostId(postId);
 
         return comments.stream()
             .map(CommentResponse::new)
