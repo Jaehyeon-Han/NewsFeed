@@ -8,6 +8,7 @@ import org.springfeed.newsfeed.global.auth.service.AuthService;
 import org.springfeed.newsfeed.global.jwt.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,5 +37,10 @@ public class AuthController {
         jwtUtil.invalidateToken(token);
 
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @DeleteMapping("/users/me")
+    public ResponseEntity<String> deleteUser(@RequestBody String username) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Account is delted");
     }
 }

@@ -1,12 +1,13 @@
-package org.springfeed.newsfeed.global.jwt;
+package org.springfeed.newsfeed.global.jwt.blacklist;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.springfeed.newsfeed.global.jwt.blacklist.BoundedSetBlacklistManager;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class HashSetBlacklistManagerTest {
+class BoundedSetBlacklistManagerTest {
 
     BoundedSetBlacklistManager blacklistManager = new BoundedSetBlacklistManager(100);
 

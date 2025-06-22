@@ -20,7 +20,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtil {
 
-    private final static long TOKEN_TIME = 30 * 60 * 1000L; // 30분?
+    private final static long TOKEN_TIME = 1 * 60 * 1000L; // 30분?
     private final static SignatureAlgorithm ALGORITHM = SignatureAlgorithm.HS256;
 
     private final BlacklistManager blacklistManager;

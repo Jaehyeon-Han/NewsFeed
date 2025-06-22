@@ -14,7 +14,7 @@ public class WebConfig {
     public FilterRegistrationBean<JwtFilter> jwtFilter(JwtUtil jwtUtil, BlacklistManager blacklistManager) {
         FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
 
-        registrationBean.setFilter(new JwtFilter(jwtUtil, blacklistManager));
+        registrationBean.setFilter(new JwtFilter(jwtUtil));
         registrationBean.setOrder(1);
         registrationBean.addUrlPatterns("/*");
 
